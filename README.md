@@ -1,6 +1,4 @@
-# n
-
-A new Flutter project.
+Collaborative-shopping-list
 
 ## Getting Started
 
