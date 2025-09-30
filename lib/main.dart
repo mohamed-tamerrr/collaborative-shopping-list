@@ -1,3 +1,4 @@
+import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
 import 'package:final_project/featrues/auth/presentation/views/sign_up_view.dart';
 import 'package:final_project/featrues/home/presentation/views/home_view.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ShopEasy',
       theme: ThemeData(
+        scaffoldBackgroundColor: AppColors.white,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0A2647)),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
