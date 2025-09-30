@@ -19,43 +19,54 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 3000), 
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0)
+        .animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.elasticOut,
+          ),
+        );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.easeInOut,
+          ),
+        );
 
-    _buttonOpacityAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Interval(0.6, 1.0, curve: Curves.easeInOut), 
-    ));
+    _buttonOpacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(
+              0.6,
+              1.0,
+              curve: Curves.easeInOut,
+            ),
+          ),
+        );
 
-    _buttonSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1.0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Interval(0.6, 1.0, curve: Curves.easeOutBack), 
-    ));
+    _buttonSlideAnimation =
+        Tween<Offset>(
+          begin: const Offset(0, 1.0),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(
+              0.6,
+              1.0,
+              curve: Curves.easeOutBack,
+            ),
+          ),
+        );
 
     _controller.forward();
 
@@ -67,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToSignIn() {
-    _controller.stop(); 
+    _controller.stop();
     Navigator.pushReplacementNamed(context, '/signin');
   }
 
@@ -109,7 +120,8 @@ class _SplashScreenState extends State<SplashScreen>
                       );
                     },
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
                       children: [
                         Container(
                           width: 140,
@@ -123,10 +135,12 @@ class _SplashScreenState extends State<SplashScreen>
                                 AppColors.lightOrange,
                               ],
                             ),
-                            borderRadius: BorderRadius.circular(28),
+                            borderRadius:
+                                BorderRadius.circular(28),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.orange.withOpacity(0.4),
+                                color: AppColors.orange
+                                    .withOpacity(0.4),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),
@@ -153,7 +167,8 @@ class _SplashScreenState extends State<SplashScreen>
                           'Start your shopping journey now',
                           style: TextStyle(
                             fontSize: 16,
-                            color: AppColors.white.withOpacity(0.8),
+                            color: AppColors.white
+                                .withOpacity(0.8),
                             fontWeight: FontWeight.w300,
                             letterSpacing: 0.5,
                           ),
@@ -169,9 +184,12 @@ class _SplashScreenState extends State<SplashScreen>
                   animation: _controller,
                   builder: (context, child) {
                     return Opacity(
-                      opacity: _buttonOpacityAnimation.value,
+                      opacity:
+                          _buttonOpacityAnimation.value,
                       child: Transform.translate(
-                        offset: _buttonSlideAnimation.value * 50,
+                        offset:
+                            _buttonSlideAnimation.value *
+                            50,
                         child: child,
                       ),
                     );
@@ -182,7 +200,8 @@ class _SplashScreenState extends State<SplashScreen>
                         width: double.infinity,
                         height: 60,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius:
+                              BorderRadius.circular(16),
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -193,7 +212,8 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.orange.withOpacity(0.4),
+                              color: AppColors.orange
+                                  .withOpacity(0.4),
                               blurRadius: 15,
                               offset: const Offset(0, 4),
                             ),
@@ -202,22 +222,27 @@ class _SplashScreenState extends State<SplashScreen>
                         child: ElevatedButton(
                           onPressed: _navigateToSignIn,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            foregroundColor: AppColors.white,
+                            backgroundColor:
+                                Colors.transparent,
+                            foregroundColor:
+                                AppColors.white,
                             shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius:
+                                  BorderRadius.circular(16),
                             ),
                             elevation: 0,
                           ),
                           child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
                             children: [
                               Text(
                                 'Get Started',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight:
+                                      FontWeight.w700,
                                   color: AppColors.white,
                                 ),
                               ),
@@ -237,18 +262,21 @@ class _SplashScreenState extends State<SplashScreen>
                         child: Text(
                           'Skip for now',
                           style: TextStyle(
-                            color: AppColors.white.withOpacity(0.7),
+                            color: AppColors.white
+                                .withOpacity(0.7),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.underline,
+                            decoration:
+                                TextDecoration.underline,
                           ),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Auto redirect in 8 seconds', 
+                        'Auto redirect in 8 seconds',
                         style: TextStyle(
-                          color: AppColors.white.withOpacity(0.5),
+                          color: AppColors.white
+                              .withOpacity(0.5),
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
                         ),

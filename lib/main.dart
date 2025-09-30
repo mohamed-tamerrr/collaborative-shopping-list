@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'screens/sign_in_screen.dart';
@@ -18,8 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ShopEasy',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0A2647)),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0A2647),
+        ),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -30,37 +30,19 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: '/', // This makes SplashScreen the first screen
+      initialRoute:
+          '/', // This makes SplashScreen the first screen
       routes: {
-        '/': (context) => const SplashScreen(), // SplashScreen is the home
+        '/': (context) =>
+            const SplashScreen(), // SplashScreen is the home
         '/signin': (context) => const SignInScreen(),
         '/signup': (context) => const SignUpScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/reset-password': (context) => const ResetPasswordScreen(),
+        '/forgot-password': (context) =>
+            const ForgotPasswordScreen(),
+        '/reset-password': (context) =>
+            const ResetPasswordScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
   }
 }
-=======
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/widgets.dart';
-import 'firebase_options.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(App());
-}
-
-class App extends StatelessWidget {
-  const App({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
->>>>>>> a289a44ebe92419b0ec2d9df85dcb761f9cc0bda
