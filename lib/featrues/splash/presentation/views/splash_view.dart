@@ -1,5 +1,6 @@
+import 'package:final_project/featrues/splash/presentation/views/widgets/splash_logo.dart';
+import 'package:final_project/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -123,35 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
                       mainAxisAlignment:
                           MainAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 140,
-                          height: 140,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppColors.orange,
-                                AppColors.lightOrange,
-                              ],
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.orange
-                                    .withOpacity(0.4),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.shopping_bag_rounded,
-                            size: 70,
-                            color: AppColors.white,
-                          ),
-                        ),
+                        SplashLogo(),
                         const SizedBox(height: 32),
                         const Text(
                           'ShopEasy',

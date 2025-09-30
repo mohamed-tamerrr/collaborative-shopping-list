@@ -1,9 +1,9 @@
+import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
+import 'package:final_project/featrues/auth/presentation/views/sign_up_view.dart';
+import 'package:final_project/featrues/splash/presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
-import 'screens/splash_screen.dart';
-import 'screens/sign_in_screen.dart';
-import 'screens/sign_up_screen.dart';
-import 'screens/forgot_password_screen.dart';
-import 'screens/reset_password_screen.dart';
+import 'featrues/auth/presentation/views/forgot_password_screen.dart';
+import 'featrues/auth/presentation/views/reset_password_screen.dart';
 
 void main() {
   runApp(const MyApp());

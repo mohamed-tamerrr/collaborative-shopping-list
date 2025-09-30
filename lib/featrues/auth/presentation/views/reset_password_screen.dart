@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_validation.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_validation.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordScreenState
+    extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _confirmPasswordController =
+      TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -41,7 +44,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final email = ModalRoute.of(context)!.settings.arguments as String?;
+    final email =
+        ModalRoute.of(context)!.settings.arguments
+            as String?;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -61,7 +66,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
                     ),
                     child: const Icon(Icons.arrow_back),
                   ),
@@ -97,7 +104,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 40),
                 TextFormField(
                   controller: _passwordController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'New Password',
@@ -110,12 +118,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscurePassword = !_obscurePassword;
+                          _obscurePassword =
+                              !_obscurePassword;
                         });
                       },
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ),
                     ),
                   ),
                   validator: AppValidation.validatePassword,
@@ -123,11 +134,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'Confirm New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword
@@ -136,30 +150,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                          _obscureConfirmPassword =
+                              !_obscureConfirmPassword;
                         });
                       },
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ),
                     ),
                   ),
-                  validator: (value) => AppValidation.validateConfirmPassword(
-                    value,
-                    _passwordController.text,
-                  ),
+                  validator: (value) =>
+                      AppValidation.validateConfirmPassword(
+                        value,
+                        _passwordController.text,
+                      ),
                 ),
                 const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _resetPassword,
+                    onPressed: _isLoading
+                        ? null
+                        : _resetPassword,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.orange,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ),
                       ),
                       elevation: 0,
                     ),
@@ -169,9 +191,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.white,
-                              ),
+                              valueColor:
+                                  AlwaysStoppedAnimation<
+                                    Color
+                                  >(AppColors.white),
                             ),
                           )
                         : const Text(

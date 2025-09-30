@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_validation.dart';
+import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/core/utils/app_validation.dart';
+import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,24 +13,20 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final _confirmPasswordController =
+      TextEditingController();
+
   bool _isLoading = false;
 
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       await Future.delayed(const Duration(seconds: 2));
 
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -37,8 +34,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           backgroundColor: Colors.green,
         ),
       );
+
       Navigator.pushReplacementNamed(context, '/signin');
     }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,6 +61,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
+
+                // Back Button
                 InkWell(
                   onTap: () => Navigator.pop(context),
                   child: Container(
@@ -61,11 +70,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
                     ),
-                    child: const Icon(Icons.arrow_back, color: AppColors.navyBlue),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: AppColors.navyBlue,
+                    ),
                   ),
                 ),
+
                 const SizedBox(height: 30),
                 Text(
                   'Create Account',
@@ -84,87 +99,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                TextFormField(
+
+                // Name
+                CustomTextField(
                   controller: _nameController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    prefixIcon: const Icon(Icons.person, color: AppColors.mediumNavy),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  labelText: 'Full Name',
+                  preFixIcon: const Icon(
+                    Icons.person,
+                    color: AppColors.mediumNavy,
                   ),
                   validator: AppValidation.validateName,
                 ),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: _emailController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email, color: AppColors.mediumNavy),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+
+                // Email
+                CustomTextField(
+                  controller: emailController,
+                  labelText: 'Email',
+                  preFixIcon: const Icon(
+                    Icons.email,
+                    color: AppColors.mediumNavy,
                   ),
                   validator: AppValidation.validateEmail,
                 ),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock, color: AppColors.mediumNavy),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+
+                // Password
+                CustomTextField(
+                  controller: passwordController,
+                  labelText: 'Password',
+                  preFixIcon: const Icon(
+                    Icons.lock,
+                    color: AppColors.mediumNavy,
                   ),
+                  isPassword: true,
                   validator: AppValidation.validatePassword,
                 ),
                 const SizedBox(height: 20),
-                TextFormField(
+
+                // Confirm Password
+                CustomTextField(
                   controller: _confirmPasswordController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock_outline, color: AppColors.mediumNavy),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                  labelText: 'Confirm Password',
+                  preFixIcon: const Icon(
+                    Icons.lock_outline,
+                    color: AppColors.mediumNavy,
+                  ),
+                  isPassword: true,
+                  validator: (value) =>
+                      AppValidation.validateConfirmPassword(
+                        value,
+                        passwordController.text,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (value) => AppValidation.validateConfirmPassword(
-                    value,
-                    _passwordController.text,
-                  ),
                 ),
+
                 const SizedBox(height: 30),
+
+                // Button
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -174,7 +165,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       backgroundColor: AppColors.orange,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ),
                       ),
                       elevation: 0,
                     ),
@@ -184,9 +177,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.white,
-                              ),
+                              valueColor:
+                                  AlwaysStoppedAnimation<
+                                    Color
+                                  >(AppColors.white),
                             ),
                           )
                         : const Text(
@@ -198,9 +192,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                   ),
                 ),
+
                 const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
                   children: [
                     Text(
                       "Already have an account?",
@@ -209,9 +205,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/signin');
-                      },
+                      onPressed: () =>
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/signin',
+                          ),
                       child: Text(
                         'Sign In',
                         style: TextStyle(
@@ -228,14 +226,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
   }
 }

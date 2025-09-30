@@ -1,6 +1,7 @@
+import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/core/utils/app_validation.dart';
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_validation.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -12,9 +13,9 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
   bool _isLoading = false;
 
   late AnimationController _textController;
@@ -30,19 +31,24 @@ class _SignInScreenState extends State<SignInScreen>
       duration: const Duration(milliseconds: 1000),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.5),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
-    );
+    _slideAnimation =
+        Tween<Offset>(
+          begin: const Offset(0, -0.5),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _textController,
+            curve: Curves.easeOut,
+          ),
+        );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(
+          CurvedAnimation(
+            parent: _textController,
+            curve: Curves.easeIn,
+          ),
+        );
 
     _textController.forward();
   }
@@ -66,8 +72,8 @@ class _SignInScreenState extends State<SignInScreen>
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     _textController.dispose();
     super.dispose();
   }
@@ -85,21 +91,6 @@ class _SignInScreenState extends State<SignInScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGrey.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.arrow_back, color: AppColors.navyBlue),
-                  ),
-                ),
-
-                const SizedBox(height: 40),
 
                 AnimatedBuilder(
                   animation: _textController,
@@ -133,53 +124,36 @@ class _SignInScreenState extends State<SignInScreen>
 
                 const SizedBox(height: 40),
 
-                TextFormField(
-                  controller: _emailController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email, color: AppColors.mediumNavy),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppColors.mediumNavy),
-                    ),
+                CustomTextField(
+                  preFixIcon: const Icon(
+                    Icons.email,
+                    color: AppColors.mediumNavy,
                   ),
-                  validator: AppValidation.validateEmail,
+                  labelText: 'Email',
+                  controller: emailController,
                 ),
 
                 const SizedBox(height: 20),
 
-                TextFormField(
-                  controller: _passwordController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock, color: AppColors.mediumNavy),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppColors.mediumNavy),
-                    ),
+                CustomTextField(
+                  controller: passwordController,
+                  labelText: 'Password',
+                  preFixIcon: const Icon(
+                    Icons.lock,
+                    color: AppColors.mediumNavy,
                   ),
+                  isPassword: true,
                   validator: AppValidation.validatePassword,
                 ),
-
                 const SizedBox(height: 10),
 
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/forgot-password'),
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      '/forgot-password',
+                    ),
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
@@ -190,7 +164,7 @@ class _SignInScreenState extends State<SignInScreen>
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
 
                 SizedBox(
                   width: double.infinity,
@@ -201,7 +175,9 @@ class _SignInScreenState extends State<SignInScreen>
                       backgroundColor: AppColors.orange,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ),
                       ),
                       elevation: 0,
                     ),
@@ -212,7 +188,9 @@ class _SignInScreenState extends State<SignInScreen>
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
-                                  AlwaysStoppedAnimation<Color>(AppColors.white),
+                                  AlwaysStoppedAnimation<
+                                    Color
+                                  >(AppColors.white),
                             ),
                           )
                         : const Text(
@@ -225,17 +203,22 @@ class _SignInScreenState extends State<SignInScreen>
                   ),
                 ),
 
-                const SizedBox(height: 20),
-
+                const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
                   children: [
                     Text(
                       "Don't have an account?",
-                      style: TextStyle(color: AppColors.grey),
+                      style: TextStyle(
+                        color: AppColors.grey,
+                      ),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pushNamed(context, '/signup'),
+                      onPressed: () => Navigator.pushNamed(
+                        context,
+                        '/signup',
+                      ),
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
