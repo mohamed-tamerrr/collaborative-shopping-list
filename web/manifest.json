@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "final_project",
     "short_name": "final_project",
+=======
+    "name": "n",
+    "short_name": "n",
+>>>>>>> a289a44ebe92419b0ec2d9df85dcb761f9cc0bda
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

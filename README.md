@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 # final_project
 
 A new Flutter project.
+=======
+Collaborative-shopping-list
+>>>>>>> a289a44ebe92419b0ec2d9df85dcb761f9cc0bda
 
 ## Getting Started
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "158459754417",
+    "project_id": "collaborative-list-app",
+    "storage_bucket": "collaborative-list-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158459754417:android:25668456d3cce200a2ef90",
+        "android_client_info": {
+          "package_name": "com.example.n"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdAzrUGDSOSCWC3gqVn19CZyxmQubKbG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

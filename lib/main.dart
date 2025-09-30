@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'screens/sign_in_screen.dart';
@@ -41,3 +42,25 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+=======
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/widgets.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+>>>>>>> a289a44ebe92419b0ec2d9df85dcb761f9cc0bda
