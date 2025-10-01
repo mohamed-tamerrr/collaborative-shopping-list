@@ -1,5 +1,6 @@
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_images.dart';
+import 'package:final_project/featrues/home/presentation/add_list_view.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,13 +13,21 @@ class HomeViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddListView(),
+            ),
+          );
+        },
         backgroundColor: AppColors.lightGrey,
         shape: CircleBorder(),
         child: Icon(Icons.add, color: AppColors.mediumNavy),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -34,10 +43,16 @@ class HomeViewBody extends StatelessWidget {
                   // to rotate the image beacuse it is rotated in the design
                   child: Transform.rotate(
                     angle: -0.07,
-                    child: SvgPicture.asset(AppImages.handDrawnArrow),
+                    child: SvgPicture.asset(
+                      AppImages.handDrawnArrow,
+                    ),
                   ),
                 ),
-                Positioned(child: SvgPicture.asset(AppImages.emptySreen)),
+                Positioned(
+                  child: SvgPicture.asset(
+                    AppImages.emptySreen,
+                  ),
+                ),
               ],
             ),
 
