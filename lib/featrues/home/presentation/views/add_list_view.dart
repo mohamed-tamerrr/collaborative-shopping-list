@@ -6,6 +6,6 @@ class AddListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: AddListViewBody());
+    return Scaffold(body: const AddListViewBody());
   }
 }

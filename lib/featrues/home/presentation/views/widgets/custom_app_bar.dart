@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({super.key});
   //! Looking for better icon for first icon button
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -25,8 +26,8 @@ class CustomAppBar extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(width: 10),
-            Column(
+            const SizedBox(width: 10),
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -43,14 +44,14 @@ class CustomAppBar extends StatelessWidget {
                 ),
               ],
             ),
-            Spacer(),
-            AppBarIcon(
+            const Spacer(),
+            const AppBarIcon(
               //! THIS ONE
               icon: Icons.workspace_premium,
               color: AppColors.mediumNavy,
             ),
-            SizedBox(width: 16),
-            AppBarIcon(
+            const SizedBox(width: 16),
+            const AppBarIcon(
               icon: Icons.notifications_outlined,
               color: AppColors.grey,
             ),
