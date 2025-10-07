@@ -1,11 +1,21 @@
+import 'package:final_project/featrues/auth/logic/cubit/auth_cubit.dart';
 import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
 import 'package:final_project/featrues/auth/presentation/views/sign_up_view.dart';
+import 'package:final_project/featrues/auth/presentation/views/widgets/home_screen.dart';
 import 'package:final_project/featrues/splash/presentation/views/splash_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'featrues/auth/data/repository/auth_repository.dart';
 import 'featrues/auth/presentation/views/forgot_password_screen.dart';
 import 'featrues/auth/presentation/views/reset_password_screen.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -14,35 +24,40 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ShopEasy',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0A2647),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+    return BlocProvider(
+      create: (context) =>AuthCubit(AuthRepository()),
+      child: MaterialApp(
+        title: 'ShopEasy',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF0A2647),
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
         ),
+        initialRoute:
+        '/',
+        // This makes SplashScreen the first screen
+        routes: {
+          '/': (context) =>
+          const SplashScreen(), // SplashScreen is the home
+          '/signin': (context) => const SignInScreen(),
+          '/signup': (context) => const SignUpScreen(),
+          '/forgot-password': (context) =>
+          const ForgotPasswordScreen(),
+          '/reset-password': (context) =>
+          const ResetPasswordScreen(),
+          '/home': (context) => const HomeScreen(),
+        },
+        debugShowCheckedModeBanner: false,
       ),
-      initialRoute:
-          '/', // This makes SplashScreen the first screen
-      routes: {
-        '/': (context) =>
-            const SplashScreen(), // SplashScreen is the home
-        '/signin': (context) => const SignInScreen(),
-        '/signup': (context) => const SignUpScreen(),
-        '/forgot-password': (context) =>
-            const ForgotPasswordScreen(),
-        '/reset-password': (context) =>
-            const ResetPasswordScreen(),
-      },
-      debugShowCheckedModeBanner: false,
     );
   }
 }

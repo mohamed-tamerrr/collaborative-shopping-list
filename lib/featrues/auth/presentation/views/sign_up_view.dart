@@ -1,7 +1,9 @@
+import 'package:final_project/featrues/auth/logic/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_validation.dart';
 import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,26 +18,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
 
-  bool _isLoading = false;
+
+
 
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      final name = _nameController.text.trim();
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+      context.read<AuthCubit>().signUp(email: email, password: password,name: name);
 
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() => _isLoading = false);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      Navigator.pushReplacementNamed(context, '/signin');
     }
   }
 
@@ -52,178 +46,206 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Welcome ${state.user.email}'),
+                backgroundColor: Colors.green,
+              ),
+            );
 
-                // Back Button
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.navyBlue,
-                    ),
-                  ),
-                ),
+            if(mounted)
+              {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                      (route) => false,
+                );
+              }
+          }
 
-                const SizedBox(height: 30),
-                Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.mediumNavy,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Join us and start shopping',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.grey,
-                  ),
-                ),
-                const SizedBox(height: 40),
 
-                // Name
-                CustomTextField(
-                  controller: _nameController,
-                  labelText: 'Full Name',
-                  preFixIcon: const Icon(
-                    Icons.person,
-                    color: AppColors.mediumNavy,
-                  ),
-                  validator: AppValidation.validateName,
-                ),
-                const SizedBox(height: 20),
+          if(state is AuthFailure)
+           {
+             ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(
+                 content: Text(state.message),
+                 backgroundColor: Colors.red,
+               ),
+             );
+           }
 
-                // Email
-                CustomTextField(
-                  controller: emailController,
-                  labelText: 'Email',
-                  preFixIcon: const Icon(
-                    Icons.email,
-                    color: AppColors.mediumNavy,
-                  ),
-                  validator: AppValidation.validateEmail,
-                ),
-                const SizedBox(height: 20),
+        },
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+          // if(state is AuthLoading)
+          //   {
+          //     return Center(child: CircularProgressIndicator(),);
+          //   }
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 40),
 
-                // Password
-                CustomTextField(
-                  controller: passwordController,
-                  labelText: 'Password',
-                  preFixIcon: const Icon(
-                    Icons.lock,
-                    color: AppColors.mediumNavy,
-                  ),
-                  isPassword: true,
-                  validator: AppValidation.validatePassword,
-                ),
-                const SizedBox(height: 20),
-
-                // Confirm Password
-                CustomTextField(
-                  controller: _confirmPasswordController,
-                  labelText: 'Confirm Password',
-                  preFixIcon: const Icon(
-                    Icons.lock_outline,
-                    color: AppColors.mediumNavy,
-                  ),
-                  isPassword: true,
-                  validator: (value) =>
-                      AppValidation.validateConfirmPassword(
-                        value,
-                        passwordController.text,
-                      ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _signUp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
+                    // Back Button
+                    InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: AppColors.lightGrey,
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: AppColors.navyBlue,
                         ),
                       ),
-                      elevation: 0,
                     ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<
-                                    Color
-                                  >(AppColors.white),
-                            ),
-                          )
-                        : const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
 
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
+                    const SizedBox(height: 30),
                     Text(
-                      "Already have an account?",
+                      'Create Account',
                       style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.mediumNavy,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Join us and start shopping',
+                      style: TextStyle(
+                        fontSize: 16,
                         color: AppColors.grey,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/signin',
+                    const SizedBox(height: 40),
+
+                    // Name
+                    CustomTextField(
+                      controller: _nameController,
+                      labelText: 'Full Name',
+                      preFixIcon: const Icon(
+                        Icons.person,
+                        color: AppColors.mediumNavy,
+                      ),
+                      validator: AppValidation.validateName,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Email
+                    CustomTextField(
+                      controller: emailController,
+                      labelText: 'Email',
+                      preFixIcon: const Icon(
+                        Icons.email,
+                        color: AppColors.mediumNavy,
+                      ),
+                      validator: AppValidation.validateEmail,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Password
+                    CustomTextField(
+                      controller: passwordController,
+                      labelText: 'Password',
+                      preFixIcon: const Icon(
+                        Icons.lock,
+                        color: AppColors.mediumNavy,
+                      ),
+                      isPassword: true,
+                      validator: AppValidation.validatePassword,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Confirm Password
+                    CustomTextField(
+                      controller: _confirmPasswordController,
+                      labelText: 'Confirm Password',
+                      preFixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.mediumNavy,
+                      ),
+                      isPassword: true,
+                      validator: (value) =>
+                          AppValidation.validateConfirmPassword(
+                            value,
+                            passwordController.text,
                           ),
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: AppColors.orange,
-                          fontWeight: FontWeight.w600,
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _signUp,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.orange,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              12,
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
+                        child:const Text(
+                          'Create Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Already have an account?",
+                          style: TextStyle(
+                            color: AppColors.grey,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(
+                                context,
+                                '/signin',
+                              ),
+                          child: Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: AppColors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
