@@ -9,10 +9,10 @@ class AddListViewBody extends StatefulWidget {
   const AddListViewBody({super.key});
 
   @override
-  State<AddListViewBody> createState() => _AddListViewBodyState();
+  State<AddListViewBody> createState() =>
+      _AddListViewBodyState();
 }
 
-// todo : Refactor + decide how the ui will be
 class _AddListViewBodyState extends State<AddListViewBody> {
   bool isSharedList = false;
 
@@ -27,13 +27,14 @@ class _AddListViewBodyState extends State<AddListViewBody> {
               padding: EdgeInsets.zero,
               children: [
                 const SizedBox(height: 20),
-
                 const CancelButton(),
                 const SizedBox(height: 6),
-
                 const Text(
                   'New List',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 28),
 
@@ -75,7 +76,12 @@ class _AddListViewBodyState extends State<AddListViewBody> {
             ),
           ),
           const SizedBox(height: 20),
-          const CustomButton(title: 'Create List'),
+          CustomButton(
+            title: 'Create List',
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
     );
