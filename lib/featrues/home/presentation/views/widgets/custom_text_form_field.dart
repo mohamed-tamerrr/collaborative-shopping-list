@@ -6,14 +6,16 @@ class CustomTextFormFieldWithTitle extends StatelessWidget {
     required this.hintText,
     this.maxLines = 1,
     this.title,
+    this.controller,
   });
   final String hintText;
   final String? title;
   final int? maxLines;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -22,6 +24,7 @@ class CustomTextFormFieldWithTitle extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller,
           maxLines: maxLines,
           decoration: InputDecoration(
             hintText: hintText,
@@ -34,7 +37,7 @@ class CustomTextFormFieldWithTitle extends StatelessWidget {
     );
   }
 
-  OutlineInputBorder  borderStyle() {
+  OutlineInputBorder borderStyle() {
     return OutlineInputBorder(
       borderSide: const BorderSide(color: Color(0xff8A888D)),
       borderRadius: BorderRadius.circular(8),

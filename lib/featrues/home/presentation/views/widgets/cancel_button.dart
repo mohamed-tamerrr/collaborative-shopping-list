@@ -1,4 +1,6 @@
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CancelButton extends StatelessWidget {
   const CancelButton({super.key});
@@ -9,6 +11,7 @@ class CancelButton extends StatelessWidget {
       children: [
         TextButton(
           onPressed: () {
+            BlocProvider.of<ListCubit>(context).clearFields();
             Navigator.pop(context);
           },
           child: const Text(

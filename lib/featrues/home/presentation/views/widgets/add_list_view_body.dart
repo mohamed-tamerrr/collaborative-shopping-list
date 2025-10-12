@@ -1,16 +1,18 @@
+import 'package:final_project/core/services/firestore_service.dart';
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/add_people_container.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/cancel_button.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_button.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_text_form_field.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/list_type_row.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddListViewBody extends StatefulWidget {
   const AddListViewBody({super.key});
 
   @override
-  State<AddListViewBody> createState() =>
-      _AddListViewBodyState();
+  State<AddListViewBody> createState() => _AddListViewBodyState();
 }
 
 class _AddListViewBodyState extends State<AddListViewBody> {
@@ -31,27 +33,30 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                 const SizedBox(height: 6),
                 const Text(
                   'New List',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 28),
 
                 // ListName Title And TextField
-                const CustomTextFormFieldWithTitle(
+                CustomTextFormFieldWithTitle(
                   title: 'List Name:',
                   hintText: 'Enter List Name',
+                  controller: BlocProvider.of<ListCubit>(
+                    context,
+                  ).listNameController,
                 ),
 
                 const SizedBox(height: 20),
 
                 // Notes Title And TextField
-                const CustomTextFormFieldWithTitle(
+                CustomTextFormFieldWithTitle(
                   title: 'Notes:',
                   hintText:
                       'Add any additional information or reminders for your list here.',
                   maxLines: 3,
+                  controller: BlocProvider.of<ListCubit>(
+                    context,
+                  ).listNoteController,
                 ),
 
                 // List Type row
@@ -78,8 +83,10 @@ class _AddListViewBodyState extends State<AddListViewBody> {
           const SizedBox(height: 20),
           CustomButton(
             title: 'Create List',
-            onPressed: () {
-              Navigator.pop(context);
+            onPressed: () async {
+              // Navigator.pop(context);
+              BlocProvider.of<ListCubit>(context).createList();
+              await FirestoreService().printDocumentsId();
             },
           ),
         ],
