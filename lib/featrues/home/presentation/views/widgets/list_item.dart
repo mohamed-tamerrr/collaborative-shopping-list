@@ -1,5 +1,8 @@
 import 'package:final_project/core/utils/app_images.dart';
+import 'package:final_project/featrues/home/presentation/views/items_view.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/custom_icon.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/group_avatar.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
 
 class ListItem extends StatelessWidget {
@@ -7,56 +10,59 @@ class ListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xffEAECF0)),
-        borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => ItemsView()),
       ),
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: 24,
-          top: 16,
-          right: 16,
-          bottom: 16,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: const Color(0xffEAECF0),
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                backgroundColor: const Color(
-                  0xffB692F6,
-                ).withOpacity(.1),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.favorite,
-                    color: Color(0xffB692F6),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 24,
+            top: 24,
+            right: 24,
+            bottom: 24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    'Grocery Shopping List',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
+                  Spacer(),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: CustomIcon(icon: Icons.favorite),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Grocery Shopping List',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w900,
-                fontSize: 20,
+              const SizedBox(height: 12),
+              GroupAvatars(
+                imageUrls: [
+                  AppImages.avatar,
+                  AppImages.avatar,
+                  AppImages.avatar,
+                  AppImages.avatar,
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            GroupAvatars(
-              imageUrls: [
-                AppImages.avatar,
-                AppImages.avatar,
-                AppImages.avatar,
-                AppImages.avatar,
-              ],
-            ),
-          ],
+              SizedBox(height: 8),
+              ListItemInfo(),
+            ],
+          ),
         ),
       ),
     );

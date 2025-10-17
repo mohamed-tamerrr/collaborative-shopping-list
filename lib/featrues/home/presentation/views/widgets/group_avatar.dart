@@ -4,7 +4,7 @@ class GroupAvatars extends StatelessWidget {
   const GroupAvatars({
     super.key,
     required this.imageUrls,
-    this.size = 40,
+    this.size = 35,
   });
   final List<String> imageUrls;
   final double size;
