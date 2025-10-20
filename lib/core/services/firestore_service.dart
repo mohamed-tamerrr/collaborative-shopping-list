@@ -26,12 +26,16 @@ class FirestoreService {
     required String itemName,
     required String addedBy,
   }) async {
-    await _db.collection('lists').doc(listId).collection('items').add({
-      'name': itemName,
-      'done': false,
-      'addedBy': addedBy,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    await _db
+        .collection('lists')
+        .doc(listId)
+        .collection('items')
+        .add({
+          'name': itemName,
+          'done': false,
+          'addedBy': addedBy,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
   }
 
   // ! still working on it

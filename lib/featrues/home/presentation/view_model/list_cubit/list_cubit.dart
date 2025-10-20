@@ -1,5 +1,7 @@
+import 'dart:async' show StreamSubscription;
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,13 +11,16 @@ part 'list_state.dart';
 
 class ListCubit extends Cubit<ListState> {
   ListCubit() : super(ListInitial());
-
+  StreamSubscription? _subscription;
   // list controllers
-  final TextEditingController listNameController = TextEditingController();
-  final TextEditingController listNoteController = TextEditingController();
+  final TextEditingController listNameController =
+      TextEditingController();
+  final TextEditingController listNoteController =
+      TextEditingController();
 
-  // items controllers
-  final TextEditingController itemNameController = TextEditingController();
+  // items controller
+  final TextEditingController itemNameController =
+      TextEditingController();
 
   createList() async {
     try {
@@ -32,6 +37,29 @@ class ListCubit extends Cubit<ListState> {
     } catch (e) {
       log(e.toString());
     }
+  }
+
+  void listenToLists() {
+    emit(ListLoading());
+    _subscription = FirebaseFirestore.instance
+        .collection('lists')
+        .snapshots()
+        .listen((snapshot) {
+          final lists = snapshot.docs
+              .map((e) => e.data())
+              .toList();
+          if (lists.isNotEmpty) {
+            emit(ListSuccess(lists));
+          } else {
+            emit(ListInitial());
+          }
+        });
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 
   // todo: move it to ItemsCubit

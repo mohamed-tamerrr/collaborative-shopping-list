@@ -9,4 +9,7 @@ final class ListLoading extends ListState {}
 
 final class ListFailure extends ListState {}
 
-final class ListSuccess extends ListState {}
+final class ListSuccess extends ListState {
+  var lists;
+  ListSuccess(this.lists);
+}
