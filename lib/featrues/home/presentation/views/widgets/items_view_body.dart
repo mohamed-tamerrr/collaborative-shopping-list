@@ -1,8 +1,5 @@
-import 'package:final_project/featrues/home/data/models/item_model.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/custom_check_list_item.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_icon.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/items_list.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/list_item.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
 

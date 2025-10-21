@@ -1,4 +1,3 @@
-import 'package:final_project/core/services/firestore_service.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/add_people_container.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/cancel_button.dart';
@@ -84,9 +83,8 @@ class _AddListViewBodyState extends State<AddListViewBody> {
           CustomButton(
             title: 'Create List',
             onPressed: () async {
-              // Navigator.pop(context);
-              BlocProvider.of<ListCubit>(context).createList();
-              await FirestoreService().printDocumentsId();
+              Navigator.pop(context);
+              await BlocProvider.of<ListCubit>(context).createList();
             },
           ),
         ],

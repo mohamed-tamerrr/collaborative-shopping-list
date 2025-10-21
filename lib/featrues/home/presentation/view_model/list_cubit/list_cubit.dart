@@ -12,30 +12,73 @@ part 'list_state.dart';
 class ListCubit extends Cubit<ListState> {
   ListCubit() : super(ListInitial());
   StreamSubscription? _subscription;
-  // list controllers
-  final TextEditingController listNameController =
-      TextEditingController();
-  final TextEditingController listNoteController =
-      TextEditingController();
 
-  // items controller
-  final TextEditingController itemNameController =
-      TextEditingController();
+  // list controllers
+  final TextEditingController listNameController = TextEditingController();
+  final TextEditingController listNoteController = TextEditingController();
 
   createList() async {
     try {
       if (listNameController.text != '') {
-        await FirestoreService().createList(
+        final listId = await FirestoreService().createList(
           listName: listNameController.text,
           ownerId: 'userId',
           note: listNoteController.text,
         );
+        clearFields();
+        return listId;
       } else {
         log('list name required');
       }
-      clearFields();
     } catch (e) {
       log(e.toString());
+    }
+    return null;
+  }
+
+  Future<void> deleteList(String listId) async {
+    try {
+      await FirestoreService().deleteList(listId);
+    } catch (e) {
+      log('Error deleting list: $e');
+    }
+  }
+
+  Future<void> renameList({
+    required String listId,
+    String? newName,
+    String? newNote,
+  }) async {
+    try {
+      await FirestoreService().renameList(newName, newNote, listId);
+    } catch (e) {
+      log('Error renaming list: $e');
+    }
+  }
+
+  Future<void> inviteUser({
+    required String listId,
+    required String userId,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('lists').doc(listId).update({
+        'members': FieldValue.arrayUnion([userId]),
+      });
+    } catch (e) {
+      log('Error inviting user: $e');
+    }
+  }
+
+  Future<void> removeUser({
+    required String listId,
+    required String userId,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('lists').doc(listId).update({
+        'members': FieldValue.arrayRemove([userId]),
+      });
+    } catch (e) {
+      log('Error removing user: $e');
     }
   }
 
@@ -45,9 +88,7 @@ class ListCubit extends Cubit<ListState> {
         .collection('lists')
         .snapshots()
         .listen((snapshot) {
-          final lists = snapshot.docs
-              .map((e) => e.data())
-              .toList();
+          final lists = snapshot.docs.map((e) => e.data()).toList();
           if (lists.isNotEmpty) {
             emit(ListSuccess(lists));
           } else {
@@ -60,15 +101,6 @@ class ListCubit extends Cubit<ListState> {
   Future<void> close() {
     _subscription?.cancel();
     return super.close();
-  }
-
-  // todo: move it to ItemsCubit
-  addItem() async {
-    await FirestoreService().addItem(
-      listId: 'listId',
-      itemName: itemNameController.text,
-      addedBy: 'userId',
-    );
   }
 
   void clearFields() {

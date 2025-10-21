@@ -24,6 +24,8 @@ class _ItemListState extends State<ItemList> {
         itemCount: items.length,
         itemBuilder: (context, index) {
           return CustomChecklistItem(
+            itemsLength: items.length,
+            index: index,
             item: items[index],
             onChanged: (bool? newValue) {
               setState(() {

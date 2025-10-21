@@ -4,6 +4,7 @@ import 'package:final_project/featrues/home/presentation/view_model/list_cubit/l
 import 'package:final_project/featrues/home/presentation/views/add_list_view.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_app_bar.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/list_item.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/loading_screen_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,38 +18,29 @@ class HomeViewBody extends StatelessWidget {
     return BlocBuilder<ListCubit, ListState>(
       builder: (context, state) {
         if (state is ListLoading) {
-          return CircularProgressIndicator();
+          return LoadingScreenBody();
         } else if (state is ListFailure) {
           return Center(child: Text('Failure'));
         } else if (state is ListSuccess) {
           return Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddListView(),
-                  ),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => AddListView()));
               },
               backgroundColor: AppColors.lightGrey,
               shape: const CircleBorder(),
-              child: const Icon(
-                Icons.add,
-                color: AppColors.mediumNavy,
-              ),
+              child: const Icon(Icons.add, color: AppColors.mediumNavy),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SafeArea(
                 child: Column(
                   children: [
                     const CustomAppBar(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: ListItem(),
                     ),
                   ],
@@ -60,23 +52,16 @@ class HomeViewBody extends StatelessWidget {
           return Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddListView(),
-                  ),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => AddListView()));
               },
               backgroundColor: AppColors.lightGrey,
               shape: const CircleBorder(),
-              child: const Icon(
-                Icons.add,
-                color: AppColors.mediumNavy,
-              ),
+              child: const Icon(Icons.add, color: AppColors.mediumNavy),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -93,9 +78,7 @@ class HomeViewBody extends StatelessWidget {
                         // to rotate the image beacuse it is rotated in the design
                         child: Transform.rotate(
                           angle: -0.07,
-                          child: SvgPicture.asset(
-                            AppImages.handDrawnArrow,
-                          ),
+                          child: SvgPicture.asset(AppImages.handDrawnArrow),
                         ),
                       ),
                       SvgPicture.asset(AppImages.emptySreen),
