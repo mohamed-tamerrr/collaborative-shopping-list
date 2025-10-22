@@ -1,7 +1,9 @@
+import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:flutter/material.dart';
 
 class ListItemInfo extends StatelessWidget {
-  const ListItemInfo({super.key});
+  const ListItemInfo({super.key, this.listModel});
+  final ListModel? listModel;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class ListItemInfo extends StatelessWidget {
         SizedBox(width: 56),
         Icon(Icons.local_offer_outlined),
         SizedBox(width: 4),
-        Text('Kitchen items'),
+        Text(listModel?.tag ?? ''),
       ],
     );
   }

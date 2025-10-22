@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firestore_service.dart';
+import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ class ListCubit extends Cubit<ListState> {
 
   // list controllers
   final TextEditingController listNameController = TextEditingController();
+  final TextEditingController listTagController = TextEditingController();
   final TextEditingController listNoteController = TextEditingController();
 
   final listKey = GlobalKey<FormState>();
@@ -23,9 +25,11 @@ class ListCubit extends Cubit<ListState> {
     if (listKey.currentState!.validate()) {
       try {
         final trimmedName = listNameController.text.trim();
+        final trimmedTag = listTagController.text.trim();
 
         final listId = await FirestoreService().createList(
           listName: trimmedName,
+          tagName: trimmedTag,
           ownerId: 'userId',
           note: listNoteController.text,
         );
@@ -50,10 +54,11 @@ class ListCubit extends Cubit<ListState> {
   Future<void> renameList({
     required String listId,
     String? newName,
+    String? newTag,
     String? newNote,
   }) async {
     try {
-      await FirestoreService().renameList(newName, newNote, listId);
+      await FirestoreService().renameList(newName, newTag, newNote, listId);
     } catch (e) {
       log('Error renaming list: $e');
     }
@@ -91,9 +96,16 @@ class ListCubit extends Cubit<ListState> {
         .collection('lists')
         .snapshots()
         .listen((snapshot) {
-          final lists = snapshot.docs.map((e) => e.data()).toList();
+          final lists = snapshot.docs
+              .map((doc) {
+                return ListModel.fromJson(doc);
+              })
+              .toList()
+              .reversed // to show lists by (new on the top)
+              .toList();
+          final int listsLength = snapshot.docs.length;
           if (lists.isNotEmpty) {
-            emit(ListSuccess(lists));
+            emit(ListSuccess(lists, listsLength));
           } else {
             emit(ListInitial());
           }
@@ -109,11 +121,12 @@ class ListCubit extends Cubit<ListState> {
   void clearFields() {
     listNameController.clear();
     listNoteController.clear();
+    listTagController.clear();
   }
 
   String? validateListNameField(String? value) {
     if (value!.trim().isEmpty) {
-      return 'List name is required';
+      return 'required field';
     }
     return null;
   }

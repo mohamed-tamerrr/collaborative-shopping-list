@@ -50,6 +50,17 @@ class _AddListViewBodyState extends State<AddListViewBody> {
 
                   const SizedBox(height: 20),
 
+                  CustomTextFormFieldWithTitle(
+                    isRequired: true,
+                    title: 'Tag Name:',
+                    hintText: 'Enter Tag Name',
+                    controller: BlocProvider.of<ListCubit>(
+                      context,
+                    ).listTagController,
+                  ),
+
+                  const SizedBox(height: 20),
+
                   // Notes Title And TextField
                   CustomTextFormFieldWithTitle(
                     title: 'Notes:',

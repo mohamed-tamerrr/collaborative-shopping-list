@@ -39,9 +39,13 @@ class HomeViewBody extends StatelessWidget {
                 child: Column(
                   children: [
                     const CustomAppBar(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: ListItem(),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: state.listsLength,
+                        itemBuilder: (context, index) {
+                          return ListItem(listModel: state.lists[index]);
+                        },
+                      ),
                     ),
                   ],
                 ),

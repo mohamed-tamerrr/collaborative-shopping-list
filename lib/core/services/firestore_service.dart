@@ -8,11 +8,13 @@ class FirestoreService {
   // create list(collection)
   Future<String> createList({
     required String listName,
+    required String tagName,
     required String ownerId,
     String? note,
   }) async {
     final doc = await _db.collection('lists').add({
       'name': listName,
+      'tag': tagName,
       'ownerId': ownerId,
       'members': [ownerId],
       'createdAt': FieldValue.serverTimestamp(),
@@ -21,6 +23,7 @@ class FirestoreService {
     return doc.id;
   }
 
+  // delete list
   Future<void> deleteList(String listId) async {
     // to delete all items inside the list
     final itemsSnapshot = await FirebaseFirestore.instance
@@ -35,9 +38,10 @@ class FirestoreService {
     await FirebaseFirestore.instance.collection('lists').doc(listId).delete();
   }
 
-  // update list name or list note
+  // update list name or list note or list tag
   Future<void> renameList(
     String? newName,
+    String? newTag,
     String? newNote,
     String listId,
   ) async {
@@ -45,6 +49,7 @@ class FirestoreService {
 
     if (newName != null && newName.isNotEmpty) updates['name'] = newName;
     if (newNote != null && newNote.isNotEmpty) updates['note'] = newNote;
+    if (newTag != null && newTag.isNotEmpty) updates['tag'] = newTag;
 
     if (updates.isNotEmpty) {
       await FirebaseFirestore.instance
