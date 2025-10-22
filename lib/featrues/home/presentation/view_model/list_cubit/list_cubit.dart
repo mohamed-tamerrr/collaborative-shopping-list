@@ -17,21 +17,24 @@ class ListCubit extends Cubit<ListState> {
   final TextEditingController listNameController = TextEditingController();
   final TextEditingController listNoteController = TextEditingController();
 
-  createList() async {
-    try {
-      if (listNameController.text != '') {
+  final listKey = GlobalKey<FormState>();
+
+  Future<String?> createList(BuildContext context) async {
+    if (listKey.currentState!.validate()) {
+      try {
+        final trimmedName = listNameController.text.trim();
+
         final listId = await FirestoreService().createList(
-          listName: listNameController.text,
+          listName: trimmedName,
           ownerId: 'userId',
           note: listNoteController.text,
         );
         clearFields();
+        if (context.mounted) Navigator.pop(context);
         return listId;
-      } else {
-        log('list name required');
+      } catch (e) {
+        log(e.toString());
       }
-    } catch (e) {
-      log(e.toString());
     }
     return null;
   }
@@ -106,5 +109,12 @@ class ListCubit extends Cubit<ListState> {
   void clearFields() {
     listNameController.clear();
     listNoteController.clear();
+  }
+
+  String? validateListNameField(String? value) {
+    if (value!.trim().isEmpty) {
+      return 'List name is required';
+    }
+    return null;
   }
 }

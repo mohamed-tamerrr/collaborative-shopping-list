@@ -1,4 +1,6 @@
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CustomTextFormFieldWithTitle extends StatelessWidget {
   const CustomTextFormFieldWithTitle({
@@ -7,11 +9,13 @@ class CustomTextFormFieldWithTitle extends StatelessWidget {
     this.maxLines = 1,
     this.title,
     this.controller,
+    this.isRequired = false,
   });
   final String hintText;
   final String? title;
   final int? maxLines;
   final TextEditingController? controller;
+  final bool isRequired;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +28,11 @@ class CustomTextFormFieldWithTitle extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          validator: isRequired
+              ? context.read<ListCubit>().validateListNameField
+              : (v) {
+                  return null;
+                },
           controller: controller,
           maxLines: maxLines,
           decoration: InputDecoration(
