@@ -13,14 +13,19 @@ class ListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (context) => ItemsView())),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ItemsView(listModel: listModel),
+        ),
+      ),
       child: Container(
         margin: EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: const Color(0xffEAECF0), width: 2),
+          border: Border.all(
+            color: const Color(0xffEAECF0),
+            width: 2,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(

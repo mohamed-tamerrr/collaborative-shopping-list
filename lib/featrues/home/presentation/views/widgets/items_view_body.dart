@@ -1,10 +1,26 @@
+import 'package:final_project/featrues/home/data/models/list_model.dart';
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_icon.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/items_list.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ItemsViewBody extends StatelessWidget {
-  const ItemsViewBody({super.key});
+class ItemsViewBody extends StatefulWidget {
+  const ItemsViewBody({super.key, required this.listModel});
+  final ListModel listModel;
+
+  @override
+  State<ItemsViewBody> createState() => _ItemsViewBodyState();
+}
+
+class _ItemsViewBodyState extends State<ItemsViewBody> {
+  late String currentName;
+  @override
+  void initState() {
+    super.initState();
+    currentName = widget.listModel.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +36,94 @@ class ItemsViewBody extends StatelessWidget {
                 icon: Icons.arrow_back,
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              CustomIcon(icon: Icons.more_vert),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'rename') {
+                    final TextEditingController
+                    renameController = TextEditingController();
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Rename List'),
+                          content: TextField(
+                            controller: renameController,
+                            decoration: const InputDecoration(
+                              labelText: 'New name',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                final newName = renameController
+                                    .text
+                                    .trim();
+                                if (newName.isNotEmpty) {
+                                  await context
+                                      .read<ListCubit>()
+                                      .renameList(
+                                        listId:
+                                            widget.listModel.id,
+                                        newName: newName,
+                                      );
+                                  setState(() {
+                                    currentName = newName;
+                                  });
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'List renamed successfully',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else if (value == 'delete') {
+                    context.read<ListCubit>().deleteList(
+                      widget.listModel.id,
+                    );
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Delete selected'),
+                      ),
+                    );
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'rename',
+                    child: Text('Rename'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
             ],
           ),
           SizedBox(height: 16),
           Text(
-            'Grocery Shopping List',
+            currentName,
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w900,
