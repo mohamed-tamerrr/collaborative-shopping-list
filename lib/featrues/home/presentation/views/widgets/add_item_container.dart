@@ -1,4 +1,7 @@
+import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddItemContainer extends StatelessWidget {
   const AddItemContainer({super.key});
@@ -14,12 +17,26 @@ class AddItemContainer extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              if (context
+                  .read<ItemsCubit>()
+                  .itemNameController
+                  .text
+                  .trim()
+                  .isNotEmpty) {
+                String? currentListId = context.read<ListCubit>().currentListId;
+                await context.read<ItemsCubit>().addItem(
+                  listId: currentListId!,
+                  userId: 'nour mowafey',
+                );
+              }
+            },
             icon: Icon(Icons.add),
             padding: EdgeInsets.zero,
           ),
           Expanded(
             child: TextField(
+              controller: context.read<ItemsCubit>().itemNameController,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(horizontal: 12),
                 hintText: 'list item',

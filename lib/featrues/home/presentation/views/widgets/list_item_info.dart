@@ -1,9 +1,9 @@
-import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:flutter/material.dart';
 
 class ListItemInfo extends StatelessWidget {
-  const ListItemInfo({super.key, this.listModel});
-  final ListModel? listModel;
+  const ListItemInfo({super.key, this.itemslength,  this.tagName});
+  final int? itemslength;
+  final String? tagName;
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +11,11 @@ class ListItemInfo extends StatelessWidget {
       children: [
         Icon(Icons.list),
         SizedBox(width: 4),
-        Text('List 1/7 Completed'),
+        Text('List 0/${itemslength ?? 0} Completed'),
         SizedBox(width: 56),
         Icon(Icons.local_offer_outlined),
         SizedBox(width: 4),
-        Text(listModel?.tag ?? ''),
+        Text(tagName ?? ''),
       ],
     );
   }

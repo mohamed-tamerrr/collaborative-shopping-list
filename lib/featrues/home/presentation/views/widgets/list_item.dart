@@ -1,31 +1,38 @@
 import 'package:final_project/core/utils/app_images.dart';
 import 'package:final_project/featrues/home/data/models/list_model.dart';
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/items_view.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_icon.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/group_avatar.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListItem extends StatelessWidget {
-  const ListItem({super.key, required this.listModel});
+  const ListItem({super.key, required this.listModel, required this.listId});
   final ListModel listModel;
+  final String listId;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ItemsView(listModel: listModel),
-        ),
-      ),
+      onTap: () {
+        context.read<ListCubit>().currentListId = listId;
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ItemsView(
+              listModel: listModel,
+              listId: listId,
+              tagName: listModel.tag,
+            ),
+          ),
+        );
+      },
       child: Container(
         margin: EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(
-            color: const Color(0xffEAECF0),
-            width: 2,
-          ),
+          border: Border.all(color: const Color(0xffEAECF0), width: 2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -42,7 +49,7 @@ class ListItem extends StatelessWidget {
                 children: [
                   Text(
                     listModel.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w900,
                       fontSize: 18,
@@ -56,7 +63,7 @@ class ListItem extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              GroupAvatars(
+              const GroupAvatars(
                 imageUrls: [
                   AppImages.avatar,
                   AppImages.avatar,
@@ -64,8 +71,8 @@ class ListItem extends StatelessWidget {
                   AppImages.avatar,
                 ],
               ),
-              SizedBox(height: 8),
-              ListItemInfo(listModel: listModel),
+              const SizedBox(height: 8),
+              ListItemInfo(tagName: listModel.tag),
             ],
           ),
         ),

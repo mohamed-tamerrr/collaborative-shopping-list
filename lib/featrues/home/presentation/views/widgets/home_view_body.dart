@@ -43,7 +43,11 @@ class HomeViewBody extends StatelessWidget {
                       child: ListView.builder(
                         itemCount: state.listsLength,
                         itemBuilder: (context, index) {
-                          return ListItem(listModel: state.lists[index]);
+                          final String listId = state.lists[index].id;
+                          return ListItem(
+                            listModel: state.lists[index],
+                            listId: listId,
+                          );
                         },
                       ),
                     ),

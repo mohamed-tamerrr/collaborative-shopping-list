@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firestore_service.dart';
+import 'package:final_project/featrues/home/data/models/item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,8 +29,16 @@ class ItemsCubit extends Cubit<ItemsState> {
         .snapshots()
         .listen((snapshot) {
           final items = snapshot.docs.map((doc) {
-            return {'id': doc.id, ...doc.data()};
+            return ItemModel.fromJson(doc);
           }).toList();
+
+          if (isClosed) return;
+
+          if (items.isNotEmpty) {
+            emit(ItemsSuccess(itemModel: items));
+          } else {
+            emit(ItemsEmpty());
+          }
         });
   }
 
@@ -38,12 +47,12 @@ class ItemsCubit extends Cubit<ItemsState> {
     if (itemName.isEmpty) return;
 
     try {
+      itemNameController.clear();
       await _firestoreService.addItem(
         listId: listId,
         itemName: itemName,
         addedBy: userId,
       );
-      itemNameController.clear();
     } catch (e) {
       emit(ItemsFailure(errMessage: e.toString()));
     }
@@ -71,5 +80,11 @@ class ItemsCubit extends Cubit<ItemsState> {
       itemId: itemId,
       isDone: !currentStatus,
     );
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }

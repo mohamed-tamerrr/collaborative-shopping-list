@@ -18,7 +18,7 @@ class CustomChecklistItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isChecked = item.isChecked;
+    final bool isChecked = item.done;
     final Color borderColor = isChecked ? Colors.deepPurple : Colors.grey;
     final Color backgroundColor = isChecked
         ? Colors.deepPurple.shade50
@@ -36,7 +36,7 @@ class CustomChecklistItem extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 12.0),
           child: CheckboxListTile(
             title: Text(
-              item.title,
+              item.name,
               style: TextStyle(
                 fontSize: 16,
                 color: isChecked ? Colors.deepPurple : Colors.black,

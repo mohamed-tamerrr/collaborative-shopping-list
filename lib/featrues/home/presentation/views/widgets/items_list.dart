@@ -3,33 +3,26 @@ import 'package:final_project/featrues/home/presentation/views/widgets/custom_ch
 import 'package:flutter/material.dart';
 
 class ItemList extends StatefulWidget {
-  const ItemList({super.key});
-
+  const ItemList({super.key, required this.itemModel});
+  final List<ItemModel> itemModel;
   @override
   State<ItemList> createState() => _ItemListState();
 }
 
 class _ItemListState extends State<ItemList> {
-  final List<ItemModel> items = [
-    ItemModel('Milk'),
-    ItemModel('Eggs'),
-    ItemModel('Butter'),
-    ItemModel('Bread'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        itemCount: items.length,
+        itemCount: widget.itemModel.length,
         itemBuilder: (context, index) {
           return CustomChecklistItem(
-            itemsLength: items.length,
+            itemsLength: widget.itemModel.length,
             index: index,
-            item: items[index],
+            item: widget.itemModel[index],
             onChanged: (bool? newValue) {
               setState(() {
-                items[index].isChecked = newValue!;
+                widget.itemModel[index].done = newValue!;
               });
             },
           );
