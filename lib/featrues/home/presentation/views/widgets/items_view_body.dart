@@ -14,6 +14,7 @@ class ItemsViewBody extends StatefulWidget {
     required this.listModel,
     required this.tagName,
   });
+
   final ListModel listModel;
   final String tagName;
 
@@ -23,14 +24,13 @@ class ItemsViewBody extends StatefulWidget {
 
 class _ItemsViewBodyState extends State<ItemsViewBody> {
   late String currentName;
+
   @override
   void initState() {
     super.initState();
-
     context.read<ItemsCubit>().listenToItems(
       context.read<ListCubit>().currentListId!,
     );
-
     currentName = widget.listModel.name;
   }
 
@@ -43,8 +43,10 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// top bar
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
                   CustomIcon(
                     icon: Icons.arrow_back,
@@ -61,7 +63,8 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                   PopupMenuButton<String>(
                     onSelected: (value) {
                       if (value == 'rename') {
-                        final TextEditingController renameController =
+                        final TextEditingController
+                        renameController =
                             TextEditingController();
                         showDialog(
                           context: context,
@@ -70,25 +73,31 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                               title: const Text('Rename List'),
                               content: TextField(
                                 controller: renameController,
-                                decoration: const InputDecoration(
-                                  labelText: 'New name',
-                                  border: OutlineInputBorder(),
-                                ),
+                                decoration:
+                                    const InputDecoration(
+                                      labelText: 'New name',
+                                      border:
+                                          OutlineInputBorder(),
+                                    ),
                               ),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: () =>
+                                      Navigator.pop(context),
                                   child: const Text('Cancel'),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    final newName = renameController.text
-                                        .trim();
+                                    final newName =
+                                        renameController.text
+                                            .trim();
                                     if (newName.isNotEmpty) {
                                       await context
                                           .read<ListCubit>()
                                           .renameList(
-                                            listId: widget.listModel.id,
+                                            listId: widget
+                                                .listModel
+                                                .id,
                                             newName: newName,
                                           );
                                       setState(() {
@@ -97,7 +106,6 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                                       if (context.mounted) {
                                         Navigator.pop(context);
                                       }
-
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
@@ -120,17 +128,21 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                           widget.listModel.id,
                         );
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Delete selected')),
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(
+                          const SnackBar(
+                            content: Text('Delete selected'),
+                          ),
                         );
                       }
                     },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(
                         value: 'rename',
                         child: Text('Rename'),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Text('Delete'),
                       ),
@@ -139,33 +151,51 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                 ],
               ),
 
+              const SizedBox(height: 8),
+
+              /// LIST STATES
               state is ItemsLoading
-                  ? Expanded(
-                      child: const Center(child: CircularProgressIndicator()),
+                  ? const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     )
                   : state is ItemsSuccess
                   ? Expanded(
                       child: Column(
                         children: [
+                          /// Calculate done items here
                           SizedBox(
                             height: 55,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                               child: ListItemInfo(
                                 tagName: widget.tagName,
-                                itemslength: state.itemModel.length,
+                                itemslength:
+                                    state.itemModel.length,
+                                doneItemslength: state.itemModel
+                                    .where((item) => item.done)
+                                    .length,
                               ),
                             ),
                           ),
-                          Expanded(child: ItemList(itemModel: state.itemModel)),
+
+                          Expanded(
+                            child: ItemList(
+                              itemModel: state.itemModel,
+                            ),
+                          ),
                         ],
                       ),
                     )
                   : state is ItemsFailure
                   ? const Center(child: Text('Error'))
-                  : Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: const AddItemContainer(),
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: AddItemContainer(),
                     ),
             ],
           );

@@ -1,6 +1,9 @@
 import 'package:final_project/featrues/home/data/models/item_model.dart';
+import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
+import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_check_list_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ItemList extends StatefulWidget {
   const ItemList({super.key, required this.itemModel});
@@ -21,9 +24,11 @@ class _ItemListState extends State<ItemList> {
             index: index,
             item: widget.itemModel[index],
             onChanged: (bool? newValue) {
-              setState(() {
-                widget.itemModel[index].done = newValue!;
-              });
+              context.read<ItemsCubit>().toggleItemDone(
+                listId: context.read<ListCubit>().currentListId!,
+                itemId: widget.itemModel[index].id,
+                currentStatus: widget.itemModel[index].done,
+              );
             },
           );
         },

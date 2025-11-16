@@ -12,7 +12,8 @@ part 'items_state.dart';
 class ItemsCubit extends Cubit<ItemsState> {
   ItemsCubit() : super(ItemsInitial());
 
-  final TextEditingController itemNameController = TextEditingController();
+  final TextEditingController itemNameController =
+      TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
   StreamSubscription? _subscription;
 
@@ -42,7 +43,10 @@ class ItemsCubit extends Cubit<ItemsState> {
         });
   }
 
-  Future<void> addItem({required String listId, required String userId}) async {
+  Future<void> addItem({
+    required String listId,
+    required String userId,
+  }) async {
     final itemName = itemNameController.text;
     if (itemName.isEmpty) return;
 

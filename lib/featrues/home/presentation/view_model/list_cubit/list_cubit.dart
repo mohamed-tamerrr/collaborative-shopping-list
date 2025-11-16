@@ -16,9 +16,12 @@ class ListCubit extends Cubit<ListState> {
   String? currentListId;
 
   // list controllers
-  final TextEditingController listNameController = TextEditingController();
-  final TextEditingController listTagController = TextEditingController();
-  final TextEditingController listNoteController = TextEditingController();
+  final TextEditingController listNameController =
+      TextEditingController();
+  final TextEditingController listTagController =
+      TextEditingController();
+  final TextEditingController listNoteController =
+      TextEditingController();
 
   final listKey = GlobalKey<FormState>();
 
@@ -62,7 +65,12 @@ class ListCubit extends Cubit<ListState> {
     String? newNote,
   }) async {
     try {
-      await FirestoreService().renameList(newName, newTag, newNote, listId);
+      await FirestoreService().renameList(
+        newName,
+        newTag,
+        newNote,
+        listId,
+      );
     } catch (e) {
       log('Error renaming list: $e');
     }
@@ -73,9 +81,12 @@ class ListCubit extends Cubit<ListState> {
     required String userId,
   }) async {
     try {
-      await FirebaseFirestore.instance.collection('lists').doc(listId).update({
-        'members': FieldValue.arrayUnion([userId]),
-      });
+      await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .update({
+            'members': FieldValue.arrayUnion([userId]),
+          });
     } catch (e) {
       log('Error inviting user: $e');
     }
@@ -86,9 +97,12 @@ class ListCubit extends Cubit<ListState> {
     required String userId,
   }) async {
     try {
-      await FirebaseFirestore.instance.collection('lists').doc(listId).update({
-        'members': FieldValue.arrayRemove([userId]),
-      });
+      await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .update({
+            'members': FieldValue.arrayRemove([userId]),
+          });
     } catch (e) {
       log('Error removing user: $e');
     }
