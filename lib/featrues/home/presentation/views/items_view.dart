@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ItemsView extends StatelessWidget {
-  const ItemsView({super.key, required this.listModel, required this.listId, required this.tagName});
+  const ItemsView({
+    super.key,
+    required this.listModel,
+    required this.listId,
+    required this.tagName,
+  });
   final ListModel listModel;
   final String listId;
   final String tagName;
@@ -15,7 +20,10 @@ class ItemsView extends StatelessWidget {
     return BlocProvider(
       create: (context) => ItemsCubit(),
       child: Scaffold(
-        body: SafeArea(child: ItemsViewBody(listModel: listModel, tagName: tagName,)),
+        body: ItemsViewBody(
+          listModel: listModel,
+          tagName: tagName,
+        ),
       ),
     );
   }

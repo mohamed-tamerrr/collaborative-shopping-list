@@ -65,10 +65,6 @@ class ListItem extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  const Align(
-                    alignment: Alignment.topRight,
-                    child: CustomIcon(icon: Icons.favorite),
-                  ),
                 ],
               ),
 
