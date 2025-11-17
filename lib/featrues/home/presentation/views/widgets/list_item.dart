@@ -9,7 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListItem extends StatelessWidget {
-  const ListItem({super.key, required this.listModel, required this.listId});
+  const ListItem({
+    super.key,
+    required this.listModel,
+    required this.listId,
+  });
+
   final ListModel listModel;
   final String listId;
 
@@ -18,6 +23,7 @@ class ListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.read<ListCubit>().currentListId = listId;
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ItemsView(
@@ -29,10 +35,13 @@ class ListItem extends StatelessWidget {
         );
       },
       child: Container(
-        margin: EdgeInsets.only(top: 8),
+        margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: const Color(0xffEAECF0), width: 2),
+          border: Border.all(
+            color: const Color(0xffEAECF0),
+            width: 2,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -62,7 +71,9 @@ class ListItem extends StatelessWidget {
                   ),
                 ],
               ),
+
               const SizedBox(height: 12),
+
               const GroupAvatars(
                 imageUrls: [
                   AppImages.avatar,
@@ -71,8 +82,29 @@ class ListItem extends StatelessWidget {
                   AppImages.avatar,
                 ],
               ),
+
               const SizedBox(height: 8),
-              ListItemInfo(tagName: listModel.tag),
+
+              StreamBuilder(
+                stream: context
+                    .read<ListCubit>()
+                    .itemsCountStream(listId),
+                builder: (context, snapshot) {
+                  int completed = 0;
+                  int total = 0;
+
+                  if (snapshot.hasData) {
+                    completed = snapshot.data!['completed']!;
+                    total = snapshot.data!['total']!;
+                  }
+
+                  return ListItemInfo(
+                    itemslength: total,
+                    doneItemslength: completed,
+                    tagName: listModel.tag,
+                  );
+                },
+              ),
             ],
           ),
         ),

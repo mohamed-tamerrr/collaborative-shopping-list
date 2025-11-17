@@ -76,6 +76,22 @@ class ListCubit extends Cubit<ListState> {
     }
   }
 
+  Stream<Map<String, int>> itemsCountStream(String listId) {
+    final collection = FirebaseFirestore.instance
+        .collection('lists')
+        .doc(listId)
+        .collection('items');
+
+    return collection.snapshots().map((snapshot) {
+      int total = snapshot.docs.length;
+      int completed = snapshot.docs
+          .where((doc) => doc['done'] == true)
+          .length;
+
+      return {'completed': completed, 'total': total};
+    });
+  }
+
   Future<void> inviteUser({
     required String listId,
     required String userId,
