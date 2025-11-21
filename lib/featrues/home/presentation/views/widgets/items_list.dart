@@ -4,10 +4,12 @@ import 'package:final_project/featrues/home/presentation/view_model/list_cubit/l
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_check_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ItemList extends StatefulWidget {
   const ItemList({super.key, required this.itemModel});
   final List<ItemModel> itemModel;
+
   @override
   State<ItemList> createState() => _ItemListState();
 }
@@ -15,21 +17,57 @@ class ItemList extends StatefulWidget {
 class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
+    final listId = context.read<ListCubit>().currentListId!;
+
+    return SlidableAutoCloseBehavior(
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 0,
+        ),
         itemCount: widget.itemModel.length,
         itemBuilder: (context, index) {
-          return CustomChecklistItem(
-            itemsLength: widget.itemModel.length,
-            index: index,
-            item: widget.itemModel[index],
-            onChanged: (bool? newValue) {
-              context.read<ItemsCubit>().toggleItemDone(
-                listId: context.read<ListCubit>().currentListId!,
-                itemId: widget.itemModel[index].id,
-                currentStatus: widget.itemModel[index].done,
-              );
-            },
+          final item = widget.itemModel[index];
+
+          return Slidable(
+            key: ValueKey(item.id),
+            endActionPane: ActionPane(
+              extentRatio: 0.25,
+              motion: const DrawerMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (_) {
+                    context.read<ItemsCubit>().removeItem(
+                      listId: listId,
+                      itemId: item.id,
+                    );
+                  },
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                  label: "Delete",
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ],
+            ),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: CustomChecklistItem(
+                itemsLength: widget.itemModel.length,
+                index: index,
+                item: item,
+                onChanged: (bool? newValue) {
+                  context.read<ItemsCubit>().toggleItemDone(
+                    listId: listId,
+                    itemId: item.id,
+                    currentStatus: item.done,
+                  );
+                },
+              ),
+            ),
           );
         },
       ),

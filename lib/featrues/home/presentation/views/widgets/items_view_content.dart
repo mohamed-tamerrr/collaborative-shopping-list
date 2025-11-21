@@ -43,7 +43,43 @@ class ItemsViewContent extends StatelessWidget {
                   ),
                 ),
               ),
-              Expanded(child: ItemList(itemModel: items)),
+              if (items.isEmpty)
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 16,
+                        left: 8,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 400,
+                        ),
+                        child: const AddItemContainer(),
+                      ),
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ItemList(itemModel: items),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: 400,
+                          ),
+                          child: const AddItemContainer(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           );
         }

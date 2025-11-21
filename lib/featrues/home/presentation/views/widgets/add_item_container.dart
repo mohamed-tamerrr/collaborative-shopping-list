@@ -29,7 +29,7 @@ class AddItemContainer extends StatelessWidget {
                     .currentListId;
                 await context.read<ItemsCubit>().addItem(
                   listId: currentListId!,
-                  userId: 'nour mowafey',
+                  userId: 'nour mowafey', // todo : here add user
                 );
               }
             },

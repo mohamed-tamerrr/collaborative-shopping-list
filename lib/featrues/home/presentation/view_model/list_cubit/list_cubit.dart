@@ -35,7 +35,7 @@ class ListCubit extends Cubit<ListState> {
         final listId = await FirestoreService().createList(
           listName: trimmedName,
           tagName: trimmedTag,
-          ownerId: 'userId',
+          ownerId: 'userId', // todo : here add firebase id
           note: listNoteController.text,
         );
         clearFields();
