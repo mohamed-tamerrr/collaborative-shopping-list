@@ -19,6 +19,7 @@ class FirestoreService {
       'members': [ownerId],
       'createdAt': FieldValue.serverTimestamp(),
       'note': note,
+      "pinned": false,
     });
     return doc.id;
   }
@@ -26,7 +27,7 @@ class FirestoreService {
   // delete list
   Future<void> deleteList(String listId) async {
     // to delete all items inside the list
-    final itemsSnapshot = await FirebaseFirestore.instance
+    final itemsSnapshot = await _db
         .collection('lists')
         .doc(listId)
         .collection('items')
@@ -35,7 +36,7 @@ class FirestoreService {
       await doc.reference.delete();
     }
     // delete the list document itself
-    await FirebaseFirestore.instance.collection('lists').doc(listId).delete();
+    await _db.collection('lists').doc(listId).delete();
   }
 
   // update list name or list note or list tag
@@ -52,14 +53,18 @@ class FirestoreService {
     if (newTag != null && newTag.isNotEmpty) updates['tag'] = newTag;
 
     if (updates.isNotEmpty) {
-      await FirebaseFirestore.instance
-          .collection('lists')
-          .doc(listId)
-          .update(updates);
+      await _db.collection('lists').doc(listId).update(updates);
     } else {
       log('No updates provided');
     }
   }
+
+  Future<void> togglePin(String listId, bool pinned) async {
+  await _db.collection('lists').doc(listId).update({
+    'pinned': !pinned,
+  });
+}
+
 
   // add item(subcollection of the listId)
   Future<void> addItem({
@@ -76,7 +81,7 @@ class FirestoreService {
   }
 
   Future<void> removeItem(String listId, String itemId) async {
-    await FirebaseFirestore.instance
+    await _db
         .collection('lists')
         .doc(listId)
         .collection('items')
@@ -91,7 +96,7 @@ class FirestoreService {
     required bool isDone,
   }) async {
     try {
-      await FirebaseFirestore.instance
+      await _db
           .collection('lists')
           .doc(listId)
           .collection('items')

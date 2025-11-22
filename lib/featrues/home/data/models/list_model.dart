@@ -8,6 +8,7 @@ class ListModel {
   final String? note;
   final String tag;
   final DateTime? createdAt;
+  final bool pinned;
 
   ListModel({
     required this.id,
@@ -17,6 +18,7 @@ class ListModel {
     this.note,
     required this.tag,
     this.createdAt,
+    this.pinned = false,
   });
 
   factory ListModel.fromJson(DocumentSnapshot doc) {
@@ -30,6 +32,7 @@ class ListModel {
       note: data['note'],
       tag: data['tag'],
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      pinned: data['pinned'] ?? false,
     );
   }
 
@@ -39,7 +42,8 @@ class ListModel {
       'ownerId': ownerId,
       'members': members,
       'note': note,
-      'tagName': tag,
+      'tag': tag,
+      'pinned': pinned,
       'createdAt': createdAt != null
           ? Timestamp.fromDate(createdAt!)
           : FieldValue.serverTimestamp(),

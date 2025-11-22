@@ -21,10 +21,7 @@ class _ItemListState extends State<ItemList> {
 
     return SlidableAutoCloseBehavior(
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 0,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
         itemCount: widget.itemModel.length,
         itemBuilder: (context, index) {
           final item = widget.itemModel[index];
@@ -45,7 +42,7 @@ class _ItemListState extends State<ItemList> {
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
-                  label: "Delete",
+                  // label: "Delete",
                   borderRadius: BorderRadius.circular(12),
                 ),
               ],

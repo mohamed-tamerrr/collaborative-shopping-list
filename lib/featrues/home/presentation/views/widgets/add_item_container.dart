@@ -24,9 +24,7 @@ class AddItemContainer extends StatelessWidget {
                   .text
                   .trim()
                   .isNotEmpty) {
-                String? currentListId = context
-                    .read<ListCubit>()
-                    .currentListId;
+                String? currentListId = context.read<ListCubit>().currentListId;
                 await context.read<ItemsCubit>().addItem(
                   listId: currentListId!,
                   userId: 'nour mowafey', // todo : here add user
@@ -38,13 +36,9 @@ class AddItemContainer extends StatelessWidget {
           ),
           Expanded(
             child: TextField(
-              controller: context
-                  .read<ItemsCubit>()
-                  .itemNameController,
+              controller: context.read<ItemsCubit>().itemNameController,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12),
                 hintText: 'list item',
                 hintStyle: TextStyle(
                   fontSize: 16,

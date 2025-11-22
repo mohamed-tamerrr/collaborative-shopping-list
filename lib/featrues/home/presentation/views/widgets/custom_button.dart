@@ -1,12 +1,7 @@
-import 'package:final_project/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({
-    super.key,
-    required this.title,
-    this.onPressed,
-  });
+  const CustomButton({super.key, required this.title, this.onPressed});
   final String title;
   final void Function()? onPressed;
   @override
@@ -18,9 +13,7 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xffb692f6),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Text(
           title,

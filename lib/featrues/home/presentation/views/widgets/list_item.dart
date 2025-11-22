@@ -2,18 +2,13 @@ import 'package:final_project/core/utils/app_images.dart';
 import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/items_view.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/custom_icon.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/group_avatar.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListItem extends StatelessWidget {
-  const ListItem({
-    super.key,
-    required this.listModel,
-    required this.listId,
-  });
+  const ListItem({super.key, required this.listModel, required this.listId});
 
   final ListModel listModel;
   final String listId;
@@ -38,10 +33,7 @@ class ListItem extends StatelessWidget {
         margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(
-            color: const Color(0xffEAECF0),
-            width: 2,
-          ),
+          border: Border.all(color: const Color(0xffEAECF0), width: 2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -64,7 +56,20 @@ class ListItem extends StatelessWidget {
                       fontSize: 18,
                     ),
                   ),
-                  const Spacer(),
+                  Spacer(),
+                  IconButton(
+                    onPressed: () async {
+                      await context.read<ListCubit>().togglePin(
+                        listId,
+                        listModel.pinned,
+                      );
+                    },
+                    icon: Icon(
+                      listModel.pinned
+                          ? Icons.push_pin_rounded
+                          : Icons.push_pin_outlined,
+                    ),
+                  ),
                 ],
               ),
 
@@ -82,9 +87,7 @@ class ListItem extends StatelessWidget {
               const SizedBox(height: 8),
 
               StreamBuilder(
-                stream: context
-                    .read<ListCubit>()
-                    .itemsCountStream(listId),
+                stream: context.read<ListCubit>().itemsCountStream(listId),
                 builder: (context, snapshot) {
                   int completed = 0;
                   int total = 0;
