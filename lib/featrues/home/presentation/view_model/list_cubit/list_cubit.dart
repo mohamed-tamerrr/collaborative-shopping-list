@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firestore_service.dart';
+import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'list_state.dart';
@@ -29,6 +29,7 @@ class ListCubit extends Cubit<ListState> {
         final trimmedName = listNameController.text.trim();
         final trimmedTag = listTagController.text.trim();
 
+        Navigator.pop(context);
         final listId = await FirestoreService().createList(
           listName: trimmedName,
           tagName: trimmedTag,
@@ -36,9 +37,12 @@ class ListCubit extends Cubit<ListState> {
           note: listNoteController.text,
         );
         clearFields();
-        if (context.mounted) Navigator.pop(context);
+
         return listId;
       } catch (e) {
+        if (context.mounted) {
+          showSnackBar(context: context, color: Colors.red);
+        }
         log(e.toString());
       }
     }
@@ -46,10 +50,13 @@ class ListCubit extends Cubit<ListState> {
   }
 
   //  Done
-  Future<void> deleteList(String listId) async {
+  Future<void> deleteList(String listId, BuildContext context) async {
     try {
       await FirestoreService().deleteList(listId);
     } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context: context, color: Colors.red);
+      }
       log('Error deleting list: $e');
     }
   }
@@ -60,10 +67,14 @@ class ListCubit extends Cubit<ListState> {
     String? newName,
     String? newTag,
     String? newNote,
+    required BuildContext context,
   }) async {
     try {
       await FirestoreService().renameList(newName, newTag, newNote, listId);
     } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context: context, color: Colors.red);
+      }
       log('Error renaming list: $e');
     }
   }
@@ -85,12 +96,16 @@ class ListCubit extends Cubit<ListState> {
   Future<void> inviteUser({
     required String listId,
     required String userId,
+    required BuildContext context,
   }) async {
     try {
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         'members': FieldValue.arrayUnion([userId]),
       });
     } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context: context, color: Colors.red);
+      }
       log('Error inviting user: $e');
     }
   }
@@ -98,12 +113,16 @@ class ListCubit extends Cubit<ListState> {
   Future<void> removeUser({
     required String listId,
     required String userId,
+    required BuildContext context,
   }) async {
     try {
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         'members': FieldValue.arrayRemove([userId]),
       });
     } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context: context, color: Colors.red);
+      }
       log('Error removing user: $e');
     }
   }

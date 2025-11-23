@@ -25,7 +25,11 @@ class ListItemInfo extends StatelessWidget {
         const SizedBox(width: 56),
         const Icon(Icons.local_offer_outlined),
         const SizedBox(width: 4),
-        Text(tagName ?? ''),
+        Text(
+          tagName!.length >= 12
+              ? tagName?.substring(0, 12) ?? ''
+              : tagName ?? '',
+        ),
       ],
     );
   }

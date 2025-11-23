@@ -49,7 +49,9 @@ class ListItem extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    listModel.name,
+                    listModel.name.length >= 25
+                        ? listModel.name.substring(0, 25)
+                        : listModel.name,
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w900,
@@ -66,7 +68,7 @@ class ListItem extends StatelessWidget {
                     },
                     icon: Icon(
                       listModel.pinned
-                          ? Icons.push_pin_rounded
+                          ? Icons.push_pin
                           : Icons.push_pin_outlined,
                     ),
                   ),

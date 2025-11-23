@@ -29,21 +29,23 @@ class _ItemListState extends State<ItemList> {
           return Slidable(
             key: ValueKey(item.id),
             endActionPane: ActionPane(
-              extentRatio: 0.25,
+              extentRatio: 0.2,
               motion: const DrawerMotion(),
+
               children: [
                 SlidableAction(
                   onPressed: (_) {
                     context.read<ItemsCubit>().removeItem(
                       listId: listId,
                       itemId: item.id,
+                      context: context,
                     );
                   },
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
+
+                  // backgroundColor: Colors.red,
+                  foregroundColor: Colors.black,
                   icon: Icons.delete,
-                  // label: "Delete",
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(50),
                 ),
               ],
             ),
@@ -52,17 +54,20 @@ class _ItemListState extends State<ItemList> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: CustomChecklistItem(
-                itemsLength: widget.itemModel.length,
-                index: index,
-                item: item,
-                onChanged: (bool? newValue) {
-                  context.read<ItemsCubit>().toggleItemDone(
-                    listId: listId,
-                    itemId: item.id,
-                    currentStatus: item.done,
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: CustomChecklistItem(
+                  itemsLength: widget.itemModel.length,
+                  index: index,
+                  item: item,
+                  onChanged: (bool? newValue) {
+                    context.read<ItemsCubit>().toggleItemDone(
+                      listId: listId,
+                      itemId: item.id,
+                      currentStatus: item.done,
+                    );
+                  },
+                ),
               ),
             ),
           );

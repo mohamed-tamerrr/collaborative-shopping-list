@@ -66,7 +66,10 @@ class ItemsViewAppBar extends StatelessWidget {
                       CustomButton(
                         title: 'yes',
                         onPressed: () async {
-                          context.read<ListCubit>().deleteList(listModel.id);
+                          context.read<ListCubit>().deleteList(
+                            listModel.id,
+                            context,
+                          );
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Delete selected')),
@@ -116,6 +119,7 @@ class ItemsViewAppBar extends StatelessWidget {
                 await context.read<ListCubit>().renameList(
                   listId: listModel.id,
                   newName: newName,
+                  context: context,
                 );
                 onRename(newName);
 

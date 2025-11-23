@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firestore_service.dart';
+import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/data/models/item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,10 +66,14 @@ class ItemsCubit extends Cubit<ItemsState> {
   Future<void> removeItem({
     required String listId,
     required String itemId,
+    required BuildContext context
   }) async {
     try {
       await FirestoreService().removeItem(listId, itemId);
     } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context: context, color: Colors.red);
+      }
       log('Error deleting item: $e');
     }
   }
