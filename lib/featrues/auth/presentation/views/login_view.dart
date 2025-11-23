@@ -42,13 +42,12 @@ class _SignInScreenState extends State<SignInScreen>
           ),
         );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(
-          CurvedAnimation(
-            parent: _textController,
-            curve: Curves.easeIn,
-          ),
-        );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Curves.easeIn,
+      ),
+    );
 
     _textController.forward();
   }
@@ -67,6 +66,7 @@ class _SignInScreenState extends State<SignInScreen>
           backgroundColor: Colors.green,
         ),
       );
+      Navigator.of(context).pushNamed('/home');
     }
   }
 
@@ -157,7 +157,7 @@ class _SignInScreenState extends State<SignInScreen>
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
-                        color: AppColors.orange,
+                        color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -172,12 +172,10 @@ class _SignInScreenState extends State<SignInScreen>
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signIn,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.primaryColor,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
@@ -188,9 +186,9 @@ class _SignInScreenState extends State<SignInScreen>
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
-                                  AlwaysStoppedAnimation<
-                                    Color
-                                  >(AppColors.white),
+                                  AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                             ),
                           )
                         : const Text(
@@ -205,14 +203,11 @@ class _SignInScreenState extends State<SignInScreen>
 
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Don't have an account?",
-                      style: TextStyle(
-                        color: AppColors.grey,
-                      ),
+                      style: TextStyle(color: AppColors.grey),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pushNamed(
@@ -222,7 +217,7 @@ class _SignInScreenState extends State<SignInScreen>
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
-                          color: AppColors.orange,
+                          color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
