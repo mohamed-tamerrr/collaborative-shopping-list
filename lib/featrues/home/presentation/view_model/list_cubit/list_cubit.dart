@@ -41,7 +41,7 @@ class ListCubit extends Cubit<ListState> {
         return listId;
       } catch (e) {
         if (context.mounted) {
-          showSnackBar(context: context, color: Colors.red);
+          ShowSnackBar.failureSnackBar(context: context);
         }
         log(e.toString());
       }
@@ -55,7 +55,7 @@ class ListCubit extends Cubit<ListState> {
       await FirestoreService().deleteList(listId);
     } catch (e) {
       if (context.mounted) {
-        showSnackBar(context: context, color: Colors.red);
+        ShowSnackBar.failureSnackBar(context: context);
       }
       log('Error deleting list: $e');
     }
@@ -73,7 +73,7 @@ class ListCubit extends Cubit<ListState> {
       await FirestoreService().renameList(newName, newTag, newNote, listId);
     } catch (e) {
       if (context.mounted) {
-        showSnackBar(context: context, color: Colors.red);
+        ShowSnackBar.failureSnackBar(context: context);
       }
       log('Error renaming list: $e');
     }
@@ -104,7 +104,7 @@ class ListCubit extends Cubit<ListState> {
       });
     } catch (e) {
       if (context.mounted) {
-        showSnackBar(context: context, color: Colors.red);
+        ShowSnackBar.failureSnackBar(context: context);
       }
       log('Error inviting user: $e');
     }
@@ -121,7 +121,7 @@ class ListCubit extends Cubit<ListState> {
       });
     } catch (e) {
       if (context.mounted) {
-        showSnackBar(context: context, color: Colors.red);
+        ShowSnackBar.failureSnackBar(context: context);
       }
       log('Error removing user: $e');
     }

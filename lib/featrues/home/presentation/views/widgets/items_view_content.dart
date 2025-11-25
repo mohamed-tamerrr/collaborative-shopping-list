@@ -15,9 +15,7 @@ class ItemsViewContent extends StatelessWidget {
     return BlocBuilder<ItemsCubit, ItemsState>(
       builder: (context, state) {
         if (state is ItemsLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (state is ItemsFailure) {
@@ -33,9 +31,7 @@ class ItemsViewContent extends StatelessWidget {
               SizedBox(
                 height: 55,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: ListItemInfo(
                     tagName: tagName,
                     itemslength: items.length,
@@ -48,14 +44,9 @@ class ItemsViewContent extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 16,
-                        left: 8,
-                      ),
+                      padding: const EdgeInsets.only(top: 16, left: 8),
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 400,
-                        ),
+                        constraints: const BoxConstraints(maxWidth: 400),
                         child: const AddItemContainer(),
                       ),
                     ),
@@ -65,15 +56,11 @@ class ItemsViewContent extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      Expanded(
-                        child: ItemList(itemModel: items),
-                      ),
+                      Expanded(child: ItemList(itemModel: items)),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: 400,
-                          ),
+                          constraints: const BoxConstraints(maxWidth: 400),
                           child: const AddItemContainer(),
                         ),
                       ),

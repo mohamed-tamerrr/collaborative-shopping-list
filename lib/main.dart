@@ -1,5 +1,4 @@
 import 'package:final_project/core/utils/app_colors.dart';
-import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
 import 'package:final_project/featrues/auth/presentation/views/sign_up_view.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/home_view.dart';
@@ -13,9 +12,7 @@ import 'featrues/auth/presentation/views/reset_password_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
@@ -31,30 +28,22 @@ class MyApp extends StatelessWidget {
         title: 'ShopEasy',
         theme: ThemeData(
           scaffoldBackgroundColor: AppColors.white,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF0A2647),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0A2647)),
           inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
             ),
           ),
         ),
-        initialRoute:
-            '/', // This makes login screen the first screen
+        initialRoute: '/', // This makes login screen the first screen
         routes: {
-          '/': (context) =>
-              const SignInScreen(), // SplashScreen is the home
+          '/': (context) => const HomeView(), // SplashScreen is the home
           '/home': (context) => const HomeView(),
           '/signup': (context) => const SignUpScreen(),
-          '/forgot-password': (context) =>
-              const ForgotPasswordScreen(),
-          '/reset-password': (context) =>
-              const ResetPasswordScreen(),
+          '/forgot-password': (context) => const ForgotPasswordScreen(),
+          '/reset-password': (context) => const ResetPasswordScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

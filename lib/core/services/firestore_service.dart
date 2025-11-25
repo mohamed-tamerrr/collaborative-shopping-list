@@ -60,11 +60,8 @@ class FirestoreService {
   }
 
   Future<void> togglePin(String listId, bool pinned) async {
-  await _db.collection('lists').doc(listId).update({
-    'pinned': !pinned,
-  });
-}
-
+    await _db.collection('lists').doc(listId).update({'pinned': !pinned});
+  }
 
   // add item(subcollection of the listId)
   Future<void> addItem({
@@ -107,5 +104,18 @@ class FirestoreService {
     } catch (e) {
       log('Error updating done status: $e');
     }
+  }
+
+  Future<void> renameItem({
+    required String listId,
+    required String itemId,
+    required String newName,
+  }) async {
+    await _db
+        .collection('lists')
+        .doc(listId)
+        .collection('items')
+        .doc(itemId)
+        .update({'name': newName});
   }
 }

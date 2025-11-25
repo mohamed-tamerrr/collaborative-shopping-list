@@ -1,12 +1,8 @@
 import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/add_item_container.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/custom_icon.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/items_list.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/items_view_appbar.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/items_view_content.dart';
-import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,9 +51,7 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
               onRename: updateName,
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: ItemsViewContent(tagName: widget.tagName),
-            ),
+            Expanded(child: ItemsViewContent(tagName: widget.tagName)),
           ],
         ),
       ),

@@ -13,8 +13,7 @@ part 'items_state.dart';
 class ItemsCubit extends Cubit<ItemsState> {
   ItemsCubit() : super(ItemsInitial());
 
-  final TextEditingController itemNameController =
-      TextEditingController();
+  final TextEditingController itemNameController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
   StreamSubscription? _subscription;
 
@@ -44,10 +43,7 @@ class ItemsCubit extends Cubit<ItemsState> {
         });
   }
 
-  Future<void> addItem({
-    required String listId,
-    required String userId,
-  }) async {
+  Future<void> addItem({required String listId, required String userId}) async {
     final itemName = itemNameController.text;
     if (itemName.isEmpty) return;
 
@@ -66,13 +62,13 @@ class ItemsCubit extends Cubit<ItemsState> {
   Future<void> removeItem({
     required String listId,
     required String itemId,
-    required BuildContext context
+    required BuildContext context,
   }) async {
     try {
       await FirestoreService().removeItem(listId, itemId);
     } catch (e) {
       if (context.mounted) {
-        showSnackBar(context: context, color: Colors.red);
+        ShowSnackBar.failureSnackBar(context: context);
       }
       log('Error deleting item: $e');
     }
@@ -89,6 +85,33 @@ class ItemsCubit extends Cubit<ItemsState> {
       itemId: itemId,
       isDone: !currentStatus,
     );
+  }
+
+  Future<void> renameItem({
+    required String listId,
+    required String itemId,
+    required String newName,
+    required BuildContext context,
+  }) async {
+    try {
+      emit(ItemsLoading());
+
+      await FirestoreService().renameItem(
+        listId: listId,
+        itemId: itemId,
+        newName: newName,
+      );
+      if (context.mounted) {
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'item renamed successfully',
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ShowSnackBar.failureSnackBar(context: context);
+      }
+    }
   }
 
   @override

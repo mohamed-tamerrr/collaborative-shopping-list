@@ -27,7 +27,7 @@ class ItemsViewAppBar extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         Text(
-          currentName,
+          currentName.length >= 25 ? currentName.substring(0, 25) : currentName,
           style: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w900,
