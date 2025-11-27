@@ -25,6 +25,8 @@ class _ForgotPasswordScreenState
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
 
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });
@@ -58,9 +60,7 @@ class _ForgotPasswordScreenState
                     height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(Icons.arrow_back),
                   ),
@@ -91,9 +91,7 @@ class _ForgotPasswordScreenState
                     labelText: 'Email',
                     prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   validator: AppValidation.validateEmail,
@@ -107,12 +105,10 @@ class _ForgotPasswordScreenState
                         ? null
                         : _sendResetLink,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.primaryColor,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
@@ -123,9 +119,9 @@ class _ForgotPasswordScreenState
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
-                                  AlwaysStoppedAnimation<
-                                    Color
-                                  >(AppColors.white),
+                                  AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                             ),
                           )
                         : const Text(

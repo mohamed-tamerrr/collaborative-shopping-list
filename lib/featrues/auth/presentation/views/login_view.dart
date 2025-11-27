@@ -1,6 +1,9 @@
-import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_validation.dart';
+import 'package:final_project/core/utils/show_snack_bar.dart';
+import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -17,6 +20,7 @@ class _SignInScreenState extends State<SignInScreen>
   final passwordController = TextEditingController();
 
   bool _isLoading = false;
+  final FirebaseServices _firebaseServices = FirebaseServices();
 
   late AnimationController _textController;
   late Animation<Offset> _slideAnimation;
@@ -42,13 +46,12 @@ class _SignInScreenState extends State<SignInScreen>
           ),
         );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(
-          CurvedAnimation(
-            parent: _textController,
-            curve: Curves.easeIn,
-          ),
-        );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Curves.easeIn,
+      ),
+    );
 
     _textController.forward();
   }
@@ -56,17 +59,34 @@ class _SignInScreenState extends State<SignInScreen>
   void _signIn() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() => _isLoading = false);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sign in successful!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      try {
+        await _firebaseServices.signIn(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+        if (!mounted) return;
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'Sign in successful!',
+        );
+        Navigator.of(context).pushReplacementNamed('/home');
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        ShowSnackBar.failureSnackBar(
+          context: context,
+          content: e.message ?? 'Sign in failed',
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ShowSnackBar.failureSnackBar(
+          context: context,
+          content: 'Sign in failed',
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
@@ -131,6 +151,7 @@ class _SignInScreenState extends State<SignInScreen>
                   ),
                   labelText: 'Email',
                   controller: emailController,
+                  validator: AppValidation.validateEmail,
                 ),
 
                 const SizedBox(height: 20),
@@ -157,7 +178,7 @@ class _SignInScreenState extends State<SignInScreen>
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
-                        color: AppColors.orange,
+                        color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -172,12 +193,10 @@ class _SignInScreenState extends State<SignInScreen>
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signIn,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.primaryColor,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
@@ -188,9 +207,9 @@ class _SignInScreenState extends State<SignInScreen>
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
-                                  AlwaysStoppedAnimation<
-                                    Color
-                                  >(AppColors.white),
+                                  AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                             ),
                           )
                         : const Text(
@@ -205,14 +224,11 @@ class _SignInScreenState extends State<SignInScreen>
 
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Don't have an account?",
-                      style: TextStyle(
-                        color: AppColors.grey,
-                      ),
+                      style: TextStyle(color: AppColors.grey),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pushNamed(
@@ -222,7 +238,7 @@ class _SignInScreenState extends State<SignInScreen>
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
-                          color: AppColors.orange,
+                          color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

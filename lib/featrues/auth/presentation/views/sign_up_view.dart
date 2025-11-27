@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_validation.dart';
+import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,27 +18,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final _confirmPasswordController =
-      TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
+  final FirebaseServices _firebaseServices = FirebaseServices();
 
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() => _isLoading = false);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      Navigator.pushReplacementNamed(context, '/signin');
+      try {
+        await _firebaseServices.signUp(
+          name: _nameController.text.trim(),
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+        if (!mounted) return;
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'Account created successfully!',
+        );
+        Navigator.pushReplacementNamed(context, '/home');
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        ShowSnackBar.failureSnackBar(
+          context: context,
+          content: e.message ?? 'Unable to create account',
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ShowSnackBar.failureSnackBar(
+          context: context,
+          content: 'Unable to create account',
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
@@ -70,9 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
                       Icons.arrow_back,
@@ -162,12 +180,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signUp,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.primaryColor,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
@@ -178,9 +194,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
-                                  AlwaysStoppedAnimation<
-                                    Color
-                                  >(AppColors.white),
+                                  AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                             ),
                           )
                         : const Text(
@@ -195,25 +211,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Already have an account?",
-                      style: TextStyle(
-                        color: AppColors.grey,
-                      ),
+                      style: TextStyle(color: AppColors.grey),
                     ),
                     TextButton(
                       onPressed: () =>
                           Navigator.pushReplacementNamed(
                             context,
-                            '/signin',
+                            '/',
                           ),
                       child: Text(
                         'Sign In',
                         style: TextStyle(
-                          color: AppColors.orange,
+                          color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

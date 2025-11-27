@@ -14,8 +14,7 @@ class _ResetPasswordScreenState
     extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController =
-      TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -28,6 +27,8 @@ class _ResetPasswordScreenState
 
       await Future.delayed(const Duration(seconds: 2));
 
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });
@@ -38,15 +39,14 @@ class _ResetPasswordScreenState
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushReplacementNamed(context, '/signin');
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final email =
-        ModalRoute.of(context)!.settings.arguments
-            as String?;
+        ModalRoute.of(context)!.settings.arguments as String?;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -66,9 +66,7 @@ class _ResetPasswordScreenState
                     height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(Icons.arrow_back),
                   ),
@@ -118,15 +116,12 @@ class _ResetPasswordScreenState
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscurePassword =
-                              !_obscurePassword;
+                          _obscurePassword = !_obscurePassword;
                         });
                       },
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   validator: AppValidation.validatePassword,
@@ -139,9 +134,7 @@ class _ResetPasswordScreenState
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'Confirm New Password',
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                    ),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword
@@ -156,9 +149,7 @@ class _ResetPasswordScreenState
                       },
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   validator: (value) =>
@@ -176,12 +167,10 @@ class _ResetPasswordScreenState
                         ? null
                         : _resetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.primaryColor,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
@@ -192,9 +181,9 @@ class _ResetPasswordScreenState
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
-                                  AlwaysStoppedAnimation<
-                                    Color
-                                  >(AppColors.white),
+                                  AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
                             ),
                           )
                         : const Text(
