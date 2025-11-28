@@ -18,7 +18,7 @@ class SplashLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.orange.withOpacity(0.4),
+            color: AppColors.orange.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

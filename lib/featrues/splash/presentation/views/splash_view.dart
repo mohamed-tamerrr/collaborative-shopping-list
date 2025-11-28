@@ -73,14 +73,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(seconds: 8), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/signin');
+        Navigator.pushReplacementNamed(context, '/login');
       }
     });
   }
 
   void _navigateToSignIn() {
     _controller.stop();
-    Navigator.pushReplacementNamed(context, '/signin');
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
@@ -141,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen>
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.white
-                                .withOpacity(0.8),
+                                .withValues(alpha: 0.8),
                             fontWeight: FontWeight.w300,
                             letterSpacing: 0.5,
                           ),
@@ -186,7 +186,7 @@ class _SplashScreenState extends State<SplashScreen>
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.orange
-                                  .withOpacity(0.4),
+                                  .withValues(alpha: 0.4),
                               blurRadius: 15,
                               offset: const Offset(0, 4),
                             ),
@@ -236,7 +236,7 @@ class _SplashScreenState extends State<SplashScreen>
                           'Skip for now',
                           style: TextStyle(
                             color: AppColors.white
-                                .withOpacity(0.7),
+                                .withValues(alpha: 0.7),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             decoration:
@@ -249,7 +249,7 @@ class _SplashScreenState extends State<SplashScreen>
                         'Auto redirect in 8 seconds',
                         style: TextStyle(
                           color: AppColors.white
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
                         ),

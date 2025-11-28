@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_validation.dart';
+import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,23 +21,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
+  final FirebaseServices _firebaseServices = FirebaseServices();
 
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() => _isLoading = false);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      Navigator.pushReplacementNamed(context, '/');
+      try {
+        await _firebaseServices.signUp(
+          name: _nameController.text.trim(),
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+        if (!mounted) return;
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'Account created successfully!',
+        );
+        Navigator.pushReplacementNamed(context, '/home');
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        ShowSnackBar.failureSnackBar(
+          context: context,
+          content: e.message ?? 'Unable to create account',
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ShowSnackBar.failureSnackBar(
+          context: context,
+          content: 'Unable to create account',
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 

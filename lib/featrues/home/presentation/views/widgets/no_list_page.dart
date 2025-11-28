@@ -33,7 +33,7 @@ class NoListPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 20),
-              const CustomAppBar(),
+              CustomAppBar(),
               const Spacer(flex: 2),
               // this stack to make arrow under the the image
               Stack(

@@ -27,6 +27,8 @@ class _ResetPasswordScreenState
 
       await Future.delayed(const Duration(seconds: 2));
 
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });
@@ -37,7 +39,7 @@ class _ResetPasswordScreenState
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushReplacementNamed(context, '/signin');
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 

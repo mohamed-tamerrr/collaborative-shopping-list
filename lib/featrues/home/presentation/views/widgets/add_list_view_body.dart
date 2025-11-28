@@ -16,6 +16,7 @@ class AddListViewBody extends StatefulWidget {
 
 class _AddListViewBodyState extends State<AddListViewBody> {
   bool isSharedList = false;
+  Set<String> _selectedUserIds = {};
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +88,13 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                   // to show or hide the list of people you wanna share the list with
                   Visibility(
                     visible: isSharedList,
-                    child: const AddPeopleContainer(),
+                    child: AddPeopleContainer(
+                      onSelectionChanged: (selectedIds) {
+                        setState(() {
+                          _selectedUserIds = selectedIds;
+                        });
+                      },
+                    ),
                   ),
                   // Add items button
                 ],
@@ -97,7 +104,11 @@ class _AddListViewBodyState extends State<AddListViewBody> {
             CustomButton(
               title: 'Create List',
               onPressed: () async {
-                await BlocProvider.of<ListCubit>(context).createList(context);
+                final selectedUserIds = isSharedList ? _selectedUserIds.toList() : <String>[];
+                await BlocProvider.of<ListCubit>(context).createList(
+                  context,
+                  sharedUserIds: selectedUserIds,
+                );
               },
             ),
           ],

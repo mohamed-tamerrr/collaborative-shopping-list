@@ -37,7 +37,7 @@ class HomeViewBody extends StatelessWidget {
               child: SafeArea(
                 child: Column(
                   children: [
-                    const CustomAppBar(),
+                    CustomAppBar(),
                     Expanded(
                       child: ListView.builder(
                         itemCount: state.listsLength,

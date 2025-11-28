@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/group_avatar.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/items_view_appbar.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/items_view_content.dart';
 import 'package:flutter/material.dart';
@@ -50,11 +52,92 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
               listModel: widget.listModel,
               onRename: updateName,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+            FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+              future: _getMembersData(widget.listModel.members),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 35,
+                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  );
+                }
+
+                final photoUrls = <String?>[];
+                final emails = <String>[];
+                
+                if (snapshot.hasData && snapshot.data != null) {
+                  for (var memberDoc in snapshot.data!) {
+                    if (memberDoc.exists) {
+                      final data = memberDoc.data();
+                      photoUrls.add(data?['photoUrl'] as String?);
+                      emails.add(data?['email'] ?? 'Unknown');
+                    } else {
+                      photoUrls.add(null);
+                      emails.add('Unknown');
+                    }
+                  }
+                }
+
+                // If no data, create list with nulls for all members
+                if (photoUrls.isEmpty && widget.listModel.members.isNotEmpty) {
+                  photoUrls.addAll(List.filled(widget.listModel.members.length, null));
+                  emails.addAll(List.filled(widget.listModel.members.length, 'Unknown'));
+                }
+
+                return GroupAvatars(
+                  imageUrls: photoUrls,
+                  memberEmails: emails,
+                  onAvatarTap: (email) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Email'),
+                        content: Text(email),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 12),
             Expanded(child: ItemsViewContent(tagName: widget.tagName)),
           ],
         ),
       ),
     );
+  }
+
+  Future<List<DocumentSnapshot<Map<String, dynamic>>>> _getMembersData(
+    List<String> memberIds,
+  ) async {
+    if (memberIds.isEmpty) {
+      return [];
+    }
+
+    final firestore = FirebaseFirestore.instance;
+
+    // Get all member documents
+    try {
+      final docs = await Future.wait(
+        memberIds.map((memberId) async {
+          try {
+            return await firestore.collection('users').doc(memberId).get();
+          } catch (e) {
+            // Return a document that doesn't exist if fetch fails
+            return firestore.collection('users').doc('dummy').get();
+          }
+        }),
+      );
+      return docs;
+    } catch (e) {
+      return [];
+    }
   }
 }

@@ -27,7 +27,6 @@ class AddItemContainer extends StatelessWidget {
                 String? currentListId = context.read<ListCubit>().currentListId;
                 await context.read<ItemsCubit>().addItem(
                   listId: currentListId!,
-                  userId: 'nour mowafey', // todo : here add user
                 );
               }
             },
