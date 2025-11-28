@@ -8,6 +8,7 @@ import 'package:final_project/featrues/home/presentation/views/widgets/group_ava
 import 'package:final_project/featrues/home/presentation/views/widgets/list_item_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ListItem extends StatelessWidget {
   const ListItem({super.key, required this.listModel, required this.listId});
@@ -17,21 +18,72 @@ class ListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.read<ListCubit>().currentListId = listId;
+    return Slidable(
+      key: ValueKey(listId),
+      endActionPane: ActionPane(
+        motion: const DrawerMotion(),
+        extentRatio: 0.25,
+        children: [
+          SlidableAction(
+            onPressed: (_) async {
+              // Show confirmation dialog
+              final shouldDelete = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Column(
+                    children: [
+                      Text(
+                        'Are you sure?',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Do you really want to delete this list? You will not be able to undo this action',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('No'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Yes'),
+                    ),
+                  ],
+                ),
+              );
 
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ItemsView(
-              listModel: listModel,
-              listId: listId,
-              tagName: listModel.tag,
-            ),
+              if (shouldDelete == true && context.mounted) {
+                await context.read<ListCubit>().deleteList(listId, context);
+              }
+            },
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'Delete',
+            borderRadius: BorderRadius.circular(12),
           ),
-        );
-      },
-      child: Container(
+        ],
+      ),
+      child: GestureDetector(
+        onTap: () {
+          context.read<ListCubit>().currentListId = listId;
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ItemsView(
+                listModel: listModel,
+                listId: listId,
+                tagName: listModel.tag,
+              ),
+            ),
+          );
+        },
+        child: Container(
         margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -136,6 +188,7 @@ class ListItem extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 

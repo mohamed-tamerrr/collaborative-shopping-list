@@ -20,7 +20,6 @@ class FirestoreService {
       'members': members ?? [ownerId],
       'createdAt': FieldValue.serverTimestamp(),
       'note': note,
-      "pinned": false,
     });
     return doc.id;
   }
@@ -60,8 +59,39 @@ class FirestoreService {
     }
   }
 
-  Future<void> togglePin(String listId, bool pinned) async {
-    await _db.collection('lists').doc(listId).update({'pinned': !pinned});
+  // Toggle pin for a specific user (user-specific pinning)
+  Future<void> togglePin({
+    required String listId,
+    required String userId,
+    required bool isCurrentlyPinned,
+  }) async {
+    final userRef = _db.collection('users').doc(userId);
+
+    if (isCurrentlyPinned) {
+      // Remove from pinned lists
+      await userRef.update({
+        'pinnedLists': FieldValue.arrayRemove([listId]),
+      });
+    } else {
+      // Add to pinned lists
+      await userRef.update({
+        'pinnedLists': FieldValue.arrayUnion([listId]),
+      });
+    }
+  }
+
+  // Get user's pinned lists
+  Future<List<String>> getUserPinnedLists(String userId) async {
+    try {
+      final userDoc = await _db.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        final data = userDoc.data();
+        return List<String>.from(data?['pinnedLists'] ?? []);
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
   }
 
   // add item(subcollection of the listId)
@@ -120,3 +150,4 @@ class FirestoreService {
         .update({'name': newName});
   }
 }
+

@@ -32,21 +32,36 @@ class NotificationService {
 
   // Get notifications for current user
   Stream<QuerySnapshot<Map<String, dynamic>>> getNotifications(String userId) {
+    // Remove orderBy to avoid index requirement - we'll sort in memory
     return _firestore
         .collection('notifications')
         .where('recipientUserId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
         .snapshots();
+  }
+
+  // Get unread notifications only
+  // Note: We use getNotifications and filter in the UI to avoid index requirement
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUnreadNotifications(
+    String userId,
+  ) {
+    // Just return all notifications - filtering will be done in UI
+    // This avoids the need for a composite index
+    return getNotifications(userId);
   }
 
   // Get unread notifications count
   Stream<int> getUnreadCount(String userId) {
+    // Get all notifications for user, then filter in memory
     return _firestore
         .collection('notifications')
         .where('recipientUserId', isEqualTo: userId)
-        .where('read', isEqualTo: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs.length);
+        .map((snapshot) {
+      // Count unread notifications
+      return snapshot.docs
+          .where((doc) => (doc.data()['read'] ?? false) == false)
+          .length;
+    });
   }
 
   // Mark notification as read
@@ -77,4 +92,5 @@ class NotificationService {
     await _firestore.collection('notifications').doc(notificationId).delete();
   }
 }
+
 

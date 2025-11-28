@@ -16,9 +16,7 @@ import 'featrues/auth/presentation/views/reset_password_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
@@ -34,13 +32,9 @@ class MyApp extends StatelessWidget {
         title: 'ShopEasy',
         theme: ThemeData(
           scaffoldBackgroundColor: AppColors.white,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF0A2647),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0A2647)),
           inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -52,16 +46,13 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const SignInScreen(),
           '/signup': (context) => const SignUpScreen(),
           '/profile': (context) => const ProfileView(),
-          '/forgot-password': (context) =>
-              const ForgotPasswordScreen(),
-          '/reset-password': (context) =>
-              const ResetPasswordScreen(),
+          '/forgot-password': (context) => const ForgotPasswordScreen(),
+          '/reset-password': (context) => const ResetPasswordScreen(),
         },
         home: StreamBuilder<User?>(
           stream: FirebaseServices().authStateChanges,
           builder: (context, snapshot) {
-            if (snapshot.connectionState ==
-                ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );

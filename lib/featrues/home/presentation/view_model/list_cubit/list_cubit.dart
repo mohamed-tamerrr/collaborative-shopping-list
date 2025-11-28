@@ -9,12 +9,14 @@ import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'list_state.dart';
 
 class ListCubit extends Cubit<ListState> {
   ListCubit() : super(ListInitial());
   StreamSubscription? _subscription;
+  StreamSubscription? _userPinnedSubscription;
   String? currentListId;
   final FirebaseServices _firebaseServices = FirebaseServices();
   final NotificationService _notificationService = NotificationService();
@@ -101,6 +103,48 @@ class ListCubit extends Cubit<ListState> {
   //  Done
   Future<void> deleteList(String listId, BuildContext context) async {
     try {
+      final currentUser = _firebaseServices.currentUser;
+      if (currentUser == null) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Please sign in to delete list',
+          );
+        }
+        return;
+      }
+
+      // Verify user has access to this list
+      final listDoc = await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .get();
+      
+      if (!listDoc.exists) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'List not found',
+          );
+        }
+        return;
+      }
+
+      final listData = listDoc.data();
+      final members = List<String>.from(listData?['members'] ?? []);
+      final ownerId = listData?['ownerId'] ?? '';
+
+      // Only owner can delete the list
+      if (ownerId != currentUser.uid) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Only the owner can delete this list',
+          );
+        }
+        return;
+      }
+
       await FirestoreService().deleteList(listId);
     } catch (e) {
       if (context.mounted) {
@@ -119,6 +163,47 @@ class ListCubit extends Cubit<ListState> {
     required BuildContext context,
   }) async {
     try {
+      final currentUser = _firebaseServices.currentUser;
+      if (currentUser == null) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Please sign in to rename list',
+          );
+        }
+        return;
+      }
+
+      // Verify user has access to this list
+      final listDoc = await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .get();
+      
+      if (!listDoc.exists) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'List not found',
+          );
+        }
+        return;
+      }
+
+      final listData = listDoc.data();
+      final members = List<String>.from(listData?['members'] ?? []);
+
+      // Only members can rename the list
+      if (!members.contains(currentUser.uid)) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'You do not have access to this list',
+          );
+        }
+        return;
+      }
+
       await FirestoreService().renameList(newName, newTag, newNote, listId);
     } catch (e) {
       if (context.mounted) {
@@ -129,6 +214,11 @@ class ListCubit extends Cubit<ListState> {
   }
 
   Stream<Map<String, int>> itemsCountStream(String listId) {
+    final currentUser = _firebaseServices.currentUser;
+    if (currentUser == null) {
+      return Stream.value({'completed': 0, 'total': 0});
+    }
+
     final collection = FirebaseFirestore.instance
         .collection('lists')
         .doc(listId)
@@ -178,26 +268,82 @@ class ListCubit extends Cubit<ListState> {
 
   void listenToLists() {
     emit(ListLoading());
-    _subscription = FirebaseFirestore.instance
+    
+    final currentUser = _firebaseServices.currentUser;
+    if (currentUser == null) {
+      emit(ListInitial());
+      return;
+    }
+
+    // Listen to both lists and user's pinned lists
+    final listsStream = FirebaseFirestore.instance
         .collection('lists')
-        .orderBy('pinned', descending: true)
-        .orderBy('createdAt', descending: true)
+        .where('members', arrayContains: currentUser.uid)
+        .snapshots();
+
+    final userPinnedStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
         .snapshots()
-        .listen((snapshot) {
-          final lists = snapshot.docs.map((doc) {
-            return ListModel.fromJson(doc);
-          }).toList();
-          final int listsLength = snapshot.docs.length;
-          if (lists.isNotEmpty) {
-            emit(ListSuccess(lists, listsLength));
-          } else {
-            emit(ListInitial());
-          }
-        });
+        .map((snapshot) {
+      final data = snapshot.data();
+      return List<String>.from(data?['pinnedLists'] ?? []);
+    });
+
+    // Combine both streams using CombineLatestStream
+    _subscription = CombineLatestStream.combine2(
+      listsStream,
+      userPinnedStream,
+      (QuerySnapshot<Map<String, dynamic>> listsSnapshot, List<String> pinnedLists) {
+        // Convert to ListModel with user-specific pinned status
+        final lists = listsSnapshot.docs.map((doc) {
+          final listData = doc.data();
+          final isPinned = pinnedLists.contains(doc.id);
+          
+          return ListModel(
+            id: doc.id,
+            name: listData['name'] ?? '',
+            ownerId: listData['ownerId'] ?? '',
+            members: List<String>.from(listData['members'] ?? []),
+            note: listData['note'],
+            tag: listData['tag'] ?? '',
+            createdAt: (listData['createdAt'] as Timestamp?)?.toDate(),
+            pinned: isPinned,
+          );
+        }).toList()
+          ..sort((a, b) {
+            // Sort by pinned first, then by createdAt
+            if (a.pinned != b.pinned) {
+              return b.pinned ? 1 : -1; // Pinned lists first
+            }
+            // Then sort by createdAt (newest first)
+            if (a.createdAt == null && b.createdAt == null) return 0;
+            if (a.createdAt == null) return 1;
+            if (b.createdAt == null) return -1;
+            return b.createdAt!.compareTo(a.createdAt!);
+          });
+        
+        return lists;
+      },
+    ).listen((lists) {
+      final int listsLength = lists.length;
+      if (lists.isNotEmpty) {
+        emit(ListSuccess(lists, listsLength));
+      } else {
+        emit(ListInitial());
+      }
+    });
   }
 
   Future<void> togglePin(String listId, bool pinned) async {
-    await FirestoreService().togglePin(listId, pinned);
+    final currentUser = _firebaseServices.currentUser;
+    if (currentUser == null) return;
+
+    await FirestoreService().togglePin(
+      listId: listId,
+      userId: currentUser.uid,
+      isCurrentlyPinned: pinned,
+    );
   }
 
   @override

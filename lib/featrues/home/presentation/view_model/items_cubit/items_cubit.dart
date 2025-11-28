@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/services/firestore_service.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/data/models/item_model.dart';
@@ -15,6 +16,7 @@ class ItemsCubit extends Cubit<ItemsState> {
 
   final TextEditingController itemNameController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseServices _firebaseServices = FirebaseServices();
   StreamSubscription? _subscription;
 
   void listenToItems(String listId) {
@@ -43,11 +45,37 @@ class ItemsCubit extends Cubit<ItemsState> {
         });
   }
 
-  Future<void> addItem({required String listId, required String userId}) async {
+  Future<void> addItem({required String listId}) async {
     final itemName = itemNameController.text;
     if (itemName.isEmpty) return;
 
+    final currentUser = _firebaseServices.currentUser;
+    if (currentUser == null) {
+      emit(ItemsFailure(errMessage: 'Unauthorized'));
+      return;
+    }
+    final userId = currentUser.uid;
+
+    // Verify user has access to this list
     try {
+      final listDoc = await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .get();
+      
+      if (!listDoc.exists) {
+        emit(ItemsFailure(errMessage: 'List not found'));
+        return;
+      }
+
+      final listData = listDoc.data();
+      final members = List<String>.from(listData?['members'] ?? []);
+
+      if (!members.contains(userId)) {
+        emit(ItemsFailure(errMessage: 'You do not have access to this list'));
+        return;
+      }
+
       itemNameController.clear();
       await _firestoreService.addItem(
         listId: listId,

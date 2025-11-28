@@ -9,9 +9,13 @@ class GroupAvatars extends StatelessWidget {
     super.key,
     required this.imageUrls,
     this.size = 35,
+    this.memberEmails,
+    this.onAvatarTap,
   });
   final List<String?> imageUrls; // Can be null for users without photos
   final double size;
+  final List<String>? memberEmails; // Email for each member (same order as imageUrls)
+  final void Function(String email)? onAvatarTap; // Callback when avatar is tapped
 
   @override
   Widget build(BuildContext context) {
@@ -36,27 +40,47 @@ class GroupAvatars extends StatelessWidget {
           if (imageUrls.isNotEmpty)
             Positioned(
               left: 0,
-              child: _buildAvatar(imageUrls[0], 0),
+              child: _buildAvatar(
+                imageUrls[0],
+                0,
+                memberEmails != null && memberEmails!.isNotEmpty
+                    ? memberEmails![0]
+                    : null,
+              ),
             ),
 
           if (imageUrls.length > 1)
             Positioned(
               left: size - overlap,
-              child: _buildAvatar(imageUrls[1], 1),
+              child: _buildAvatar(
+                imageUrls[1],
+                1,
+                memberEmails != null && memberEmails!.length > 1
+                    ? memberEmails![1]
+                    : null,
+              ),
             ),
 
           if (remaining > 0)
             Positioned(
               left: 2 * (size - overlap),
-              child: CircleAvatar(
-                radius: size / 2,
-                backgroundColor: const Color(0xFFF3EFFF),
-                child: Text(
-                  '+$remaining',
-                  style: TextStyle(
-                    color: Colors.purple[600],
-                    fontWeight: FontWeight.w600,
-                    fontSize: size / 2.5,
+              child: GestureDetector(
+                onTap: onAvatarTap != null && memberEmails != null && memberEmails!.length > 2
+                    ? () {
+                        // Show all remaining emails
+                        _showAllMembersDialog(context, memberEmails!.sublist(2));
+                      }
+                    : null,
+                child: CircleAvatar(
+                  radius: size / 2,
+                  backgroundColor: const Color(0xFFF3EFFF),
+                  child: Text(
+                    '+$remaining',
+                    style: TextStyle(
+                      color: Colors.purple[600],
+                      fontWeight: FontWeight.w600,
+                      fontSize: size / 2.5,
+                    ),
                   ),
                 ),
               ),
@@ -66,7 +90,20 @@ class GroupAvatars extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(String? imageUrl, int index) {
+  Widget _buildAvatar(String? imageUrl, int index, String? email) {
+    final avatarWidget = _buildAvatarWidget(imageUrl);
+
+    if (onAvatarTap != null && email != null) {
+      return GestureDetector(
+        onTap: () => onAvatarTap!(email),
+        child: avatarWidget,
+      );
+    }
+
+    return avatarWidget;
+  }
+
+  Widget _buildAvatarWidget(String? imageUrl) {
     if (imageUrl == null || imageUrl.isEmpty) {
       return CircleAvatar(
         radius: size / 2,
@@ -115,6 +152,29 @@ class GroupAvatars extends StatelessWidget {
         Icons.person,
         size: size / 1.5,
         color: Colors.purple[600],
+      ),
+    );
+  }
+
+  void _showAllMembersDialog(BuildContext context, List<String> emails) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Members'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: emails.map((email) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(email),
+          )).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
