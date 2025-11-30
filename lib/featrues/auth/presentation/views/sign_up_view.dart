@@ -1,7 +1,9 @@
 import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/core/utils/app_validation.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
+import 'package:final_project/core/widgets/unified_back_button.dart';
 import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,49 +76,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: AppStyles.screenPadding,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: AppStyles.spacingHuge),
 
                 // Back Button
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.navyBlue,
-                    ),
-                  ),
-                ),
+                const UnifiedBackButton(),
 
-                const SizedBox(height: 30),
-                Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.mediumNavy,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppStyles.spacingXXXL),
+                Text('Create Account', style: AppStyles.heading1()),
+                const SizedBox(height: AppStyles.spacingS),
                 Text(
                   'Join us and start shopping',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.grey,
-                  ),
+                  style: AppStyles.bodyLarge(),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: AppStyles.spacingHuge),
 
                 // Name
                 CustomTextField(
@@ -128,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   validator: AppValidation.validateName,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppStyles.spacingXL),
 
                 // Email
                 CustomTextField(
@@ -140,7 +118,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   validator: AppValidation.validateEmail,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppStyles.spacingXL),
 
                 // Password
                 CustomTextField(
@@ -153,7 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   isPassword: true,
                   validator: AppValidation.validatePassword,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppStyles.spacingXL),
 
                 // Confirm Password
                 CustomTextField(
@@ -164,72 +142,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     color: AppColors.mediumNavy,
                   ),
                   isPassword: true,
-                  validator: (value) =>
-                      AppValidation.validateConfirmPassword(
-                        value,
-                        passwordController.text,
-                      ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _signUp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                            ),
-                          )
-                        : const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                  validator: (value) => AppValidation.validateConfirmPassword(
+                    value,
+                    passwordController.text,
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: AppStyles.spacingXXXL),
+
+                // Button
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _signUp,
+                  style: AppStyles.primaryButtonStyle,
+                  child: _isLoading
+                      ? AppStyles.loadingIndicator()
+                      : const Text(
+                          'Create Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+
+                const SizedBox(height: AppStyles.spacingXL),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Already have an account?",
-                      style: TextStyle(color: AppColors.grey),
+                      style: AppStyles.bodyLarge(),
                     ),
                     TextButton(
                       onPressed: () =>
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/',
-                          ),
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                          Navigator.pushReplacementNamed(context, '/'),
+                      child: Text('Sign In', style: AppStyles.link()),
                     ),
                   ],
                 ),

@@ -1,5 +1,6 @@
 import 'package:final_project/featrues/home/data/models/item_model.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project/core/utils/app_colors.dart';
 
 class CustomChecklistItem extends StatelessWidget {
   const CustomChecklistItem({
@@ -18,11 +19,9 @@ class CustomChecklistItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isChecked = item.done;
-    final Color borderColor = isChecked
-        ? Colors.deepPurple
-        : Colors.grey;
+    final Color borderColor = isChecked ? AppColors.mediumNavy : Colors.grey;
     final Color backgroundColor = isChecked
-        ? Colors.deepPurple.shade50
+        ? AppColors.lightGrey.withValues(alpha: 0.5)
         : Colors.white;
 
     return Container(
@@ -36,19 +35,17 @@ class CustomChecklistItem extends StatelessWidget {
           item.name,
           style: TextStyle(
             fontSize: 16,
-            color: isChecked ? Colors.deepPurple : Colors.black,
+            color: isChecked ? AppColors.mediumNavy : Colors.black,
             fontWeight: FontWeight.w500,
           ),
           overflow: TextOverflow.ellipsis,
         ),
         value: isChecked,
         onChanged: onChanged,
-        activeColor: Colors.deepPurple,
+        activeColor: AppColors.mediumNavy,
         checkColor: Colors.white,
         controlAffinity: ListTileControlAffinity.leading,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12.0,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
       ),
     );
   }

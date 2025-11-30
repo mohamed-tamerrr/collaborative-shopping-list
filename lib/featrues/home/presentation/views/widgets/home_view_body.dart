@@ -1,4 +1,5 @@
 import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/add_list_view.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/custom_app_bar.dart';
@@ -28,12 +29,12 @@ class HomeViewBody extends StatelessWidget {
                   context,
                 ).push(MaterialPageRoute(builder: (context) => AddListView()));
               },
-              backgroundColor: AppColors.lightGrey,
+              backgroundColor: AppColors.mediumNavy,
               shape: const CircleBorder(),
-              child: const Icon(Icons.add, color: AppColors.mediumNavy),
+              child: const Icon(Icons.add, color: AppColors.white),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: AppStyles.screenPaddingHorizontal,
               child: SafeArea(
                 child: Column(
                   children: [

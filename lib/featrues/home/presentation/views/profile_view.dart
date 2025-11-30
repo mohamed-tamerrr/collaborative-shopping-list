@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/services/local_storage_service.dart';
 import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -64,9 +65,7 @@ class _ProfileViewState extends State<ProfileView> {
 
     if (user == null) {
       return const Scaffold(
-        body: Center(
-          child: Text('Please sign in to view your profile.'),
-        ),
+        body: Center(child: Text('Please sign in to view your profile.')),
       );
     }
 
@@ -81,24 +80,30 @@ class _ProfileViewState extends State<ProfileView> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profile'),
+            centerTitle: true,
+            backgroundColor: AppColors.white,
+            elevation: 0,
           ),
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppStyles.screenPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppStyles.spacingXL),
                   Center(
                     child: Stack(
                       children: [
                         FutureBuilder<File?>(
-                          future: photoUrl != null && photoUrl!.startsWith('local:')
+                          future:
+                              photoUrl != null && photoUrl!.startsWith('local:')
                               ? LocalStorageService.getProfilePhotoFile(
-                                  photoUrl!.substring(6))
+                                  photoUrl!.substring(6),
+                                )
                               : Future.value(null),
                           builder: (context, snapshot) {
-                            if (photoUrl != null && photoUrl!.startsWith('local:')) {
+                            if (photoUrl != null &&
+                                photoUrl!.startsWith('local:')) {
                               // Local photo
                               if (snapshot.hasData && snapshot.data != null) {
                                 return CircleAvatar(
@@ -116,7 +121,8 @@ class _ProfileViewState extends State<ProfileView> {
                                   color: AppColors.grey,
                                 ),
                               );
-                            } else if (photoUrl != null && photoUrl!.isNotEmpty) {
+                            } else if (photoUrl != null &&
+                                photoUrl!.isNotEmpty) {
                               // Network photo (backward compatibility)
                               return CircleAvatar(
                                 radius: 60,
@@ -150,7 +156,7 @@ class _ProfileViewState extends State<ProfileView> {
                             onTap: _isUploading ? null : _pickAndUpload,
                             child: CircleAvatar(
                               radius: 18,
-                              backgroundColor: AppColors.primaryColor,
+                              backgroundColor: AppColors.orange,
                               child: _isUploading
                                   ? const SizedBox(
                                       height: 16,
@@ -159,8 +165,8 @@ class _ProfileViewState extends State<ProfileView> {
                                         strokeWidth: 2,
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                          AppColors.white,
-                                        ),
+                                              AppColors.white,
+                                            ),
                                       ),
                                     )
                                   : const Icon(
@@ -174,24 +180,36 @@ class _ProfileViewState extends State<ProfileView> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: AppStyles.spacingXXXL),
                   Card(
                     elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     color: AppColors.lightGrey.withValues(alpha: 0.4),
                     child: ListTile(
-                      leading: const Icon(Icons.person),
-                      title: const Text('Name'),
-                      subtitle: Text(name),
+                      leading: const Icon(
+                        Icons.person,
+                        color: AppColors.mediumNavy,
+                      ),
+                      title: Text('Name', style: AppStyles.label()),
+                      subtitle: Text(name, style: AppStyles.bodyMedium()),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppStyles.spacingM),
                   Card(
                     elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     color: AppColors.lightGrey.withValues(alpha: 0.4),
                     child: ListTile(
-                      leading: const Icon(Icons.email),
-                      title: const Text('Email'),
-                      subtitle: Text(email),
+                      leading: const Icon(
+                        Icons.email,
+                        color: AppColors.mediumNavy,
+                      ),
+                      title: Text('Email', style: AppStyles.label()),
+                      subtitle: Text(email, style: AppStyles.bodyMedium()),
                     ),
                   ),
                   const Spacer(),
@@ -201,6 +219,11 @@ class _ProfileViewState extends State<ProfileView> {
                       onPressed: _signOut,
                       icon: const Icon(Icons.logout),
                       label: const Text('Sign Out'),
+                      style: AppStyles.primaryButtonStyle.copyWith(
+                        minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 56),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -212,4 +235,3 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 }
-

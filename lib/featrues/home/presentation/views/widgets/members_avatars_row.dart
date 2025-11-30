@@ -43,9 +43,7 @@ class MembersAvatarsRow extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(
             height: 60,
-            child: Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           );
         }
 
@@ -80,7 +78,10 @@ class MembersAvatarsRow extends StatelessWidget {
                 },
                 child: Column(
                   children: [
-                    _MemberAvatar(photoUrl: member.photoUrl, email: member.email),
+                    _MemberAvatar(
+                      photoUrl: member.photoUrl,
+                      email: member.email,
+                    ),
                     const SizedBox(height: 4),
                     SizedBox(
                       width: 60,
@@ -129,7 +130,7 @@ class _MemberAvatar extends StatelessWidget {
         child: Text(
           initials,
           style: const TextStyle(
-            color: AppColors.primaryColor,
+            color: AppColors.orange,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -153,7 +154,7 @@ class _MemberAvatar extends StatelessWidget {
             child: Text(
               initials,
               style: const TextStyle(
-                color: AppColors.primaryColor,
+                color: AppColors.orange,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -167,17 +168,7 @@ class _MemberAvatar extends StatelessWidget {
       backgroundImage: NetworkImage(photoUrl!),
       backgroundColor: AppColors.lightGrey,
       onBackgroundImageError: (_, __) {},
-      child: Text(
-        initials,
-        style: const TextStyle(
-          color: Colors.transparent,
-        ),
-      ),
+      child: Text(initials, style: const TextStyle(color: Colors.transparent)),
     );
   }
 }
-
-
-
-
-

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/app_validation.dart';
+import '../../../../core/widgets/unified_back_button.dart';
+import '../../../../featrues/auth/presentation/views/widgets/custom_text_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() =>
-      _ForgotPasswordScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState
-    extends State<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isLoading = false;
@@ -46,92 +47,44 @@ class _ForgotPasswordScreenState
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: AppStyles.screenPadding,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.arrow_back),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Text(
-                  'Forgot Password',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.navyBlue,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppStyles.spacingHuge),
+                const UnifiedBackButton(),
+                const SizedBox(height: AppStyles.spacingXXXL),
+                Text('Forgot Password', style: AppStyles.heading1()),
+                const SizedBox(height: AppStyles.spacingS),
                 Text(
                   "Enter your email and we'll send you a reset link",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.grey,
-                  ),
+                  style: AppStyles.bodyLarge(),
                 ),
-                const SizedBox(height: 40),
-                TextFormField(
+                const SizedBox(height: AppStyles.spacingHuge),
+                CustomTextField(
                   controller: _emailController,
-                  autovalidateMode:
-                      AutovalidateMode.onUserInteraction,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  labelText: 'Email',
+                  preFixIcon: const Icon(
+                    Icons.email,
+                    color: AppColors.mediumNavy,
                   ),
                   validator: AppValidation.validateEmail,
                 ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _isLoading
-                        ? null
-                        : _sendResetLink,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                            ),
-                          )
-                        : const Text(
-                            'Send Reset Link',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                const SizedBox(height: AppStyles.spacingXXXL),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _sendResetLink,
+                  style: AppStyles.primaryButtonStyle,
+                  child: _isLoading
+                      ? AppStyles.loadingIndicator()
+                      : const Text(
+                          'Send Reset Link',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                  ),
+                        ),
                 ),
               ],
             ),

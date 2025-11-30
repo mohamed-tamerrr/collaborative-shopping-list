@@ -1,3 +1,4 @@
+import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/add_people_container.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/cancel_button.dart';
@@ -21,7 +22,7 @@ class _AddListViewBodyState extends State<AddListViewBody> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(25.0),
+      padding: AppStyles.screenPadding,
       child: Form(
         key: context.read<ListCubit>().listKey,
         child: Column(
@@ -30,14 +31,11 @@ class _AddListViewBodyState extends State<AddListViewBody> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppStyles.spacingXL),
                   const CancelButton(),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'New List',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppStyles.spacingM),
+                  Text('New List', style: AppStyles.heading2()),
+                  const SizedBox(height: AppStyles.spacingXXL),
 
                   // ListName Title And TextField
                   CustomTextFormFieldWithTitle(
@@ -49,7 +47,7 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                     ).listNameController,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppStyles.spacingXL),
 
                   CustomTextFormFieldWithTitle(
                     isRequired: true,
@@ -60,7 +58,7 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                     ).listTagController,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppStyles.spacingXL),
 
                   // Notes Title And TextField
                   CustomTextFormFieldWithTitle(
@@ -74,7 +72,7 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                   ),
 
                   // List Type row
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppStyles.spacingXL),
                   ListTypeRow(
                     value: isSharedList,
                     onChange: (value) {
@@ -83,7 +81,7 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                       });
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppStyles.spacingXL),
 
                   // to show or hide the list of people you wanna share the list with
                   Visibility(
@@ -100,15 +98,16 @@ class _AddListViewBodyState extends State<AddListViewBody> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppStyles.spacingXL),
             CustomButton(
               title: 'Create List',
               onPressed: () async {
-                final selectedUserIds = isSharedList ? _selectedUserIds.toList() : <String>[];
-                await BlocProvider.of<ListCubit>(context).createList(
+                final selectedUserIds = isSharedList
+                    ? _selectedUserIds.toList()
+                    : <String>[];
+                await BlocProvider.of<ListCubit>(
                   context,
-                  sharedUserIds: selectedUserIds,
-                );
+                ).createList(context, sharedUserIds: selectedUserIds);
               },
             ),
           ],

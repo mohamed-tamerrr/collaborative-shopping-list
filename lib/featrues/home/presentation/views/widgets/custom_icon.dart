@@ -1,3 +1,4 @@
+import 'package:final_project/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomIcon extends StatelessWidget {
@@ -7,10 +8,10 @@ class CustomIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      backgroundColor: const Color(0xffB692F6).withValues(alpha: 0.1),
+      backgroundColor: AppColors.lightGrey,
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(icon, color: Color(0xffB692F6)),
+        icon: Icon(icon, color: AppColors.mediumNavy),
       ),
     );
   }

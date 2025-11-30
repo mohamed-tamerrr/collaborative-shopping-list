@@ -5,10 +5,7 @@ import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 
 class AddPeopleContainer extends StatefulWidget {
-  const AddPeopleContainer({
-    super.key,
-    this.onSelectionChanged,
-  });
+  const AddPeopleContainer({super.key, this.onSelectionChanged});
 
   final void Function(Set<String> selectedIds)? onSelectionChanged;
 
@@ -46,15 +43,11 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
                 }
 
                 if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
+                  return Center(child: Text('Error: ${snapshot.error}'));
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: Text('No users found'),
-                  );
+                  return const Center(child: Text('No users found'));
                 }
 
                 final users = snapshot.data!.docs
@@ -62,9 +55,7 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
                     .toList();
 
                 if (users.isEmpty) {
-                  return const Center(
-                    child: Text('No other users available'),
-                  );
+                  return const Center(child: Text('No other users available'));
                 }
 
                 // Update email mapping
@@ -74,9 +65,7 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
                 }
 
                 if (users.isEmpty) {
-                  return const Center(
-                    child: Text('No users to share with'),
-                  );
+                  return const Center(child: Text('No users to share with'));
                 }
 
                 return ListView.builder(
@@ -188,7 +177,6 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
       ),
     );
   }
-
 }
 
 class AddedPersonRow extends StatelessWidget {
@@ -212,11 +200,7 @@ class AddedPersonRow extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             if (isSelected)
-              const Icon(
-                Icons.check_circle,
-                color: AppColors.primaryColor,
-                size: 20,
-              )
+              const Icon(Icons.check_circle, color: AppColors.orange, size: 20)
             else
               const Icon(
                 Icons.radio_button_unchecked,
@@ -231,7 +215,7 @@ class AddedPersonRow extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: isSelected ? AppColors.primaryColor : AppColors.navyBlue,
+                  color: isSelected ? AppColors.orange : AppColors.navyBlue,
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),

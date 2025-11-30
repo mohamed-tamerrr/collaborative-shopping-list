@@ -72,7 +72,10 @@ class ItemsViewAppBar extends StatelessWidget {
                           );
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Delete selected')),
+                            const SnackBar(
+                              content: Text('List Has Been Deleted'),
+                              backgroundColor: AppColors.orange,
+                            ),
                           );
                           Navigator.pop(context);
                         },

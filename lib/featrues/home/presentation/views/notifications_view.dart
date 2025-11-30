@@ -331,12 +331,12 @@ class NotificationsView extends StatelessWidget {
   const NotificationsView({super.key});
 
   static Future<void> showNotificationMessage(
-      BuildContext context, {
-        required NotificationService notificationService,
-        required String notificationId,
-        String? senderUserId,
-        String? listId,
-      }) async {
+    BuildContext context, {
+    required NotificationService notificationService,
+    required String notificationId,
+    String? senderUserId,
+    String? listId,
+  }) async {
     final firebaseServices = FirebaseServices();
     String senderName = 'Unknown User';
     String listName = 'Unknown List';
@@ -377,10 +377,7 @@ class NotificationsView extends StatelessWidget {
         SnackBar(
           content: RichText(
             text: TextSpan(
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
               children: [
                 TextSpan(
                   text: senderName,
@@ -394,7 +391,7 @@ class NotificationsView extends StatelessWidget {
               ],
             ),
           ),
-          backgroundColor: AppColors.primaryColor,
+          backgroundColor: AppColors.mediumNavy,
           duration: const Duration(seconds: 4),
           action: SnackBarAction(
             label: 'Mark as read',
@@ -419,9 +416,7 @@ class NotificationsView extends StatelessWidget {
 
     if (currentUser == null) {
       return const Scaffold(
-        body: Center(
-          child: Text('Please sign in to view notifications'),
-        ),
+        body: Center(child: Text('Please sign in to view notifications')),
       );
     }
 
@@ -469,29 +464,29 @@ class NotificationsView extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('No notifications available'),
+                    backgroundColor: AppColors.orange,
                     duration: Duration(seconds: 2),
                   ),
                 );
               },
-              child: const Center(
-                child: Text('No notifications'),
-              ),
+              child: const Center(child: Text('No notifications')),
             );
           }
 
           // Filter unread notifications and sort
           final allNotifications = snapshot.data!.docs;
-          final notifications = allNotifications
-              .where((doc) => (doc.data()['read'] ?? false) == false)
-              .toList()
-            ..sort((a, b) {
-              final aTime = a.data()['createdAt'] as Timestamp?;
-              final bTime = b.data()['createdAt'] as Timestamp?;
-              if (aTime == null && bTime == null) return 0;
-              if (aTime == null) return 1;
-              if (bTime == null) return -1;
-              return bTime.compareTo(aTime);
-            });
+          final notifications =
+              allNotifications
+                  .where((doc) => (doc.data()['read'] ?? false) == false)
+                  .toList()
+                ..sort((a, b) {
+                  final aTime = a.data()['createdAt'] as Timestamp?;
+                  final bTime = b.data()['createdAt'] as Timestamp?;
+                  if (aTime == null && bTime == null) return 0;
+                  if (aTime == null) return 1;
+                  if (bTime == null) return -1;
+                  return bTime.compareTo(aTime);
+                });
 
           if (notifications.isEmpty) {
             return GestureDetector(
@@ -499,13 +494,12 @@ class NotificationsView extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('No notifications available'),
+                    backgroundColor: AppColors.orange,
                     duration: Duration(seconds: 2),
                   ),
                 );
               },
-              child: const Center(
-                child: Text('No notifications'),
-              ),
+              child: const Center(child: Text('No notifications')),
             );
           }
 
@@ -583,7 +577,7 @@ class NotificationItem extends StatelessWidget {
           border: Border.all(
             color: isRead
                 ? AppColors.grey.withValues(alpha: 0.3)
-                : AppColors.primaryColor,
+                : AppColors.orange,
             width: isRead ? 1 : 2,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -597,7 +591,7 @@ class NotificationItem extends StatelessWidget {
                 height: 8,
                 margin: const EdgeInsets.only(right: 12, top: 6),
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryColor,
+                  color: AppColors.orange,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -608,18 +602,14 @@ class NotificationItem extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontWeight:
-                      isRead ? FontWeight.normal : FontWeight.bold,
+                      fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     message,
-                    style: TextStyle(
-                      color: AppColors.grey,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: AppColors.grey, fontSize: 14),
                   ),
                 ],
               ),
@@ -629,7 +619,7 @@ class NotificationItem extends StatelessWidget {
               IconButton(
                 icon: const Icon(
                   Icons.check_circle_outline,
-                  color: AppColors.primaryColor,
+                  color: AppColors.mediumNavy,
                 ),
                 tooltip: 'Mark as read',
                 onPressed: () async {

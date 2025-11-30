@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/featrues/home/data/models/list_model.dart';
 import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
@@ -44,7 +46,7 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: AppStyles.screenPaddingHorizontal,
         child: Column(
           children: [
             ItemsViewAppBar(
@@ -52,20 +54,27 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
               listModel: widget.listModel,
               onRename: updateName,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppStyles.spacingM),
             FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
               future: _getMembersData(widget.listModel.members),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox(
                     height: 35,
-                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.orange,
+                        ),
+                      ),
+                    ),
                   );
                 }
 
                 final photoUrls = <String?>[];
                 final emails = <String>[];
-                
+
                 if (snapshot.hasData && snapshot.data != null) {
                   for (var memberDoc in snapshot.data!) {
                     if (memberDoc.exists) {
@@ -81,8 +90,12 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
 
                 // If no data, create list with nulls for all members
                 if (photoUrls.isEmpty && widget.listModel.members.isNotEmpty) {
-                  photoUrls.addAll(List.filled(widget.listModel.members.length, null));
-                  emails.addAll(List.filled(widget.listModel.members.length, 'Unknown'));
+                  photoUrls.addAll(
+                    List.filled(widget.listModel.members.length, null),
+                  );
+                  emails.addAll(
+                    List.filled(widget.listModel.members.length, 'Unknown'),
+                  );
                 }
 
                 return GroupAvatars(
@@ -106,7 +119,7 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                 );
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppStyles.spacingM),
             Expanded(child: ItemsViewContent(tagName: widget.tagName)),
           ],
         ),

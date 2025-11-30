@@ -13,18 +13,13 @@ class NoListPage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AddListView(),
-            ),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => AddListView()));
         },
-        backgroundColor: AppColors.lightGrey,
+        backgroundColor: AppColors.orange,
         shape: const CircleBorder(),
-        child: const Icon(
-          Icons.add,
-          color: AppColors.mediumNavy,
-        ),
+        child: const Icon(Icons.add, color: AppColors.white),
       ),
       body: SafeArea(
         child: Padding(
@@ -45,9 +40,7 @@ class NoListPage extends StatelessWidget {
                     // to rotate the image beacuse it is rotated in the design
                     child: Transform.rotate(
                       angle: -0.07,
-                      child: SvgPicture.asset(
-                        AppImages.handDrawnArrow,
-                      ),
+                      child: SvgPicture.asset(AppImages.handDrawnArrow),
                     ),
                   ),
                   SvgPicture.asset(AppImages.emptySreen),
