@@ -1,97 +1,3 @@
-// import 'package:final_project/core/services/firebase_services.dart';
-// import 'package:final_project/core/utils/app_colors.dart';
-// import 'package:final_project/core/utils/app_styles.dart';
-// import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
-// import 'package:final_project/featrues/auth/presentation/views/sign_up_view.dart';
-// import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
-// import 'package:final_project/featrues/home/presentation/views/home_view.dart';
-// import 'package:final_project/featrues/home/presentation/views/profile_view.dart';
-// import 'package:final_project/firebase_options.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-
-// import 'featrues/auth/presentation/views/forgot_password_screen.dart';
-// import 'featrues/auth/presentation/views/reset_password_screen.dart';
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-//   runApp(const MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider(
-//       create: (context) => ListCubit(),
-//       child: MaterialApp(
-//         title: 'ShopEasy',
-//         theme: ThemeData(
-//           scaffoldBackgroundColor: AppColors.white,
-//           // Using navy blue as the primary seed color
-//           colorScheme: ColorScheme.fromSeed(
-//             seedColor: AppColors.navyBlue,
-//             primary: AppColors.orange,
-//             secondary: AppColors.mediumNavy,
-//           ),
-//           inputDecorationTheme: AppStyles.inputDecorationTheme,
-//           elevatedButtonTheme: ElevatedButtonThemeData(
-//             style: AppStyles.primaryButtonStyle,
-//           ),
-//           textButtonTheme: TextButtonThemeData(
-//             style: AppStyles.textButtonStyle,
-//           ),
-//           outlinedButtonTheme: OutlinedButtonThemeData(
-//             style: AppStyles.outlinedButtonStyle,
-//           ),
-//           appBarTheme: const AppBarTheme(
-//             backgroundColor: AppColors.white,
-//             elevation: 0,
-//             iconTheme: IconThemeData(color: AppColors.mediumNavy),
-//             titleTextStyle: TextStyle(
-//               color: AppColors.mediumNavy,
-//               fontSize: 20,
-//               fontWeight: FontWeight.w600,
-//             ),
-//           ),
-//         ),
-//         routes: {
-//           '/home': (context) => const HomeView(),
-//           '/login': (context) => const SignInScreen(),
-//           '/signup': (context) => const SignUpScreen(),
-//           '/profile': (context) => const ProfileView(),
-//           '/forgot-password': (context) => const ForgotPasswordScreen(),
-//           '/reset-password': (context) => const ResetPasswordScreen(),
-//         },
-//         home: StreamBuilder<User?>(
-//           stream: FirebaseServices().authStateChanges,
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return Scaffold(
-//                 body: Center(
-//                   child: CircularProgressIndicator(
-//                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.orange),
-//                   ),
-//                 ),
-//               );
-//             }
-//             if (snapshot.hasData) {
-//               return const HomeView();
-//             }
-//             return const SignInScreen();
-//           },
-//         ),
-//         debugShowCheckedModeBanner: false,
-//       ),
-//     );
-//   }
-// }
-import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
@@ -110,7 +16,9 @@ import 'featrues/splash/presentation/views/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp());
 }
@@ -144,7 +52,9 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.white,
             elevation: 0,
-            iconTheme: IconThemeData(color: AppColors.mediumNavy),
+            iconTheme: IconThemeData(
+              color: AppColors.mediumNavy,
+            ),
             titleTextStyle: TextStyle(
               color: AppColors.mediumNavy,
               fontSize: 20,
@@ -157,8 +67,10 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const SignInScreen(),
           '/signup': (context) => const SignUpScreen(),
           '/profile': (context) => const ProfileView(),
-          '/forgot-password': (context) => const ForgotPasswordScreen(),
-          '/reset-password': (context) => const ResetPasswordScreen(),
+          '/forgot-password': (context) =>
+              const ForgotPasswordScreen(),
+          '/reset-password': (context) =>
+              const ResetPasswordScreen(),
         },
 
         home: const SplashScreen(),
