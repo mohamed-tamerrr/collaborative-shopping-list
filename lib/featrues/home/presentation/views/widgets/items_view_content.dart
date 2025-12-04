@@ -59,9 +59,10 @@ class ItemsViewContent extends StatelessWidget {
                       Expanded(child: ItemList(itemModel: items)),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
+                        
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 400),
-                          child: const AddItemContainer(),
+                          child:  AddItemContainer(),
                         ),
                       ),
                     ],

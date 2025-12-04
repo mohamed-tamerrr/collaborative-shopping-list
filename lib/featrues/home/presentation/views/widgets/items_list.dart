@@ -6,15 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ItemList extends StatefulWidget {
+class ItemList extends StatelessWidget {
   const ItemList({super.key, required this.itemModel});
   final List<ItemModel> itemModel;
 
-  @override
-  State<ItemList> createState() => _ItemListState();
-}
-
-class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
     final listId = context.read<ListCubit>().currentListId!;
@@ -22,9 +17,9 @@ class _ItemListState extends State<ItemList> {
     return SlidableAutoCloseBehavior(
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-        itemCount: widget.itemModel.length,
+        itemCount: itemModel.length,
         itemBuilder: (context, index) {
-          final item = widget.itemModel[index];
+          final item = itemModel[index];
 
           return Slidable(
             key: ValueKey(item.id),
@@ -57,15 +52,17 @@ class _ItemListState extends State<ItemList> {
               child: Padding(
                 padding: const EdgeInsets.only(right: 4),
                 child: CustomChecklistItem(
-                  itemsLength: widget.itemModel.length,
+                  itemsLength: itemModel.length,
                   index: index,
                   item: item,
                   onChanged: (bool? newValue) {
-                    context.read<ItemsCubit>().toggleItemDone(
-                      listId: listId,
-                      itemId: item.id,
-                      currentStatus: item.done,
-                    );
+                    context.read<ItemsCubit>().isEditing
+                        ? () {}
+                        : context.read<ItemsCubit>().toggleItemDone(
+                            listId: listId,
+                            itemId: item.id,
+                            currentStatus: item.done,
+                          );
                   },
                 ),
               ),

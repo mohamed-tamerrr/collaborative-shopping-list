@@ -15,9 +15,11 @@ class ItemsCubit extends Cubit<ItemsState> {
   ItemsCubit() : super(ItemsInitial());
 
   final TextEditingController itemNameController = TextEditingController();
+  final TextEditingController editItemNameController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
   final FirebaseServices _firebaseServices = FirebaseServices();
   StreamSubscription? _subscription;
+  bool isEditing = false;
 
   void listenToItems(String listId) {
     emit(ItemsLoading());
@@ -62,7 +64,7 @@ class ItemsCubit extends Cubit<ItemsState> {
           .collection('lists')
           .doc(listId)
           .get();
-      
+
       if (!listDoc.exists) {
         emit(ItemsFailure(errMessage: 'List not found'));
         return;
@@ -122,19 +124,11 @@ class ItemsCubit extends Cubit<ItemsState> {
     required BuildContext context,
   }) async {
     try {
-      emit(ItemsLoading());
-
       await FirestoreService().renameItem(
         listId: listId,
         itemId: itemId,
         newName: newName,
       );
-      if (context.mounted) {
-        ShowSnackBar.successSnackBar(
-          context: context,
-          content: 'item renamed successfully',
-        );
-      }
     } catch (e) {
       if (context.mounted) {
         ShowSnackBar.failureSnackBar(context: context);

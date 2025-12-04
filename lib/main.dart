@@ -16,9 +16,7 @@ import 'featrues/splash/presentation/views/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
@@ -52,9 +50,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.white,
             elevation: 0,
-            iconTheme: IconThemeData(
-              color: AppColors.mediumNavy,
-            ),
+            iconTheme: IconThemeData(color: AppColors.mediumNavy),
             titleTextStyle: TextStyle(
               color: AppColors.mediumNavy,
               fontSize: 20,
@@ -67,10 +63,8 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const SignInScreen(),
           '/signup': (context) => const SignUpScreen(),
           '/profile': (context) => const ProfileView(),
-          '/forgot-password': (context) =>
-              const ForgotPasswordScreen(),
-          '/reset-password': (context) =>
-              const ResetPasswordScreen(),
+          '/forgot-password': (context) => const ForgotPasswordScreen(),
+          '/reset-password': (context) => const ResetPasswordScreen(),
         },
 
         home: const SplashScreen(),

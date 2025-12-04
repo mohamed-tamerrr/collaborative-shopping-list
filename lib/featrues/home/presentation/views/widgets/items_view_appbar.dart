@@ -20,18 +20,23 @@ class ItemsViewAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomIcon(
           icon: Icons.arrow_back,
           onPressed: () => Navigator.pop(context),
         ),
-        Text(
-          currentName.length >= 25 ? currentName.substring(0, 25) : currentName,
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w900,
-            fontSize: 18,
+        SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            currentName,
+
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              fontSize: 18,
+            ),
           ),
         ),
         PopupMenuButton<String>(

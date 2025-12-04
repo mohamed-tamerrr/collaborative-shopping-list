@@ -63,7 +63,8 @@ class ListCubit extends Cubit<ListState> {
 
         // Send notifications to shared users
         if (sharedUserIds.isNotEmpty) {
-          final ownerName = currentUser.displayName ?? currentUser.email ?? 'Someone';
+          final ownerName =
+              currentUser.displayName ?? currentUser.email ?? 'Someone';
           for (final userId in sharedUserIds) {
             try {
               await _notificationService.createNotification(
@@ -103,6 +104,7 @@ class ListCubit extends Cubit<ListState> {
   //  Done
   Future<void> deleteList(String listId, BuildContext context) async {
     try {
+      emit(ListLoading());
       final currentUser = _firebaseServices.currentUser;
       if (currentUser == null) {
         if (context.mounted) {
@@ -119,7 +121,7 @@ class ListCubit extends Cubit<ListState> {
           .collection('lists')
           .doc(listId)
           .get();
-      
+
       if (!listDoc.exists) {
         if (context.mounted) {
           ShowSnackBar.failureSnackBar(
@@ -179,7 +181,7 @@ class ListCubit extends Cubit<ListState> {
           .collection('lists')
           .doc(listId)
           .get();
-      
+
       if (!listDoc.exists) {
         if (context.mounted) {
           ShowSnackBar.failureSnackBar(
@@ -268,7 +270,7 @@ class ListCubit extends Cubit<ListState> {
 
   void listenToLists() {
     emit(ListLoading());
-    
+
     final currentUser = _firebaseServices.currentUser;
     if (currentUser == null) {
       emit(ListInitial());
@@ -286,53 +288,53 @@ class ListCubit extends Cubit<ListState> {
         .doc(currentUser.uid)
         .snapshots()
         .map((snapshot) {
-      final data = snapshot.data();
-      return List<String>.from(data?['pinnedLists'] ?? []);
-    });
+          final data = snapshot.data();
+          return List<String>.from(data?['pinnedLists'] ?? []);
+        });
 
     // Combine both streams using CombineLatestStream
-    _subscription = CombineLatestStream.combine2(
-      listsStream,
-      userPinnedStream,
-      (QuerySnapshot<Map<String, dynamic>> listsSnapshot, List<String> pinnedLists) {
-        // Convert to ListModel with user-specific pinned status
-        final lists = listsSnapshot.docs.map((doc) {
-          final listData = doc.data();
-          final isPinned = pinnedLists.contains(doc.id);
-          
-          return ListModel(
-            id: doc.id,
-            name: listData['name'] ?? '',
-            ownerId: listData['ownerId'] ?? '',
-            members: List<String>.from(listData['members'] ?? []),
-            note: listData['note'],
-            tag: listData['tag'] ?? '',
-            createdAt: (listData['createdAt'] as Timestamp?)?.toDate(),
-            pinned: isPinned,
-          );
-        }).toList()
-          ..sort((a, b) {
-            // Sort by pinned first, then by createdAt
-            if (a.pinned != b.pinned) {
-              return b.pinned ? 1 : -1; // Pinned lists first
-            }
-            // Then sort by createdAt (newest first)
-            if (a.createdAt == null && b.createdAt == null) return 0;
-            if (a.createdAt == null) return 1;
-            if (b.createdAt == null) return -1;
-            return b.createdAt!.compareTo(a.createdAt!);
-          });
-        
-        return lists;
-      },
-    ).listen((lists) {
-      final int listsLength = lists.length;
-      if (lists.isNotEmpty) {
-        emit(ListSuccess(lists, listsLength));
-      } else {
-        emit(ListInitial());
-      }
-    });
+    _subscription =
+        CombineLatestStream.combine2(listsStream, userPinnedStream, (
+          QuerySnapshot<Map<String, dynamic>> listsSnapshot,
+          List<String> pinnedLists,
+        ) {
+          // Convert to ListModel with user-specific pinned status
+          final lists =
+              listsSnapshot.docs.map((doc) {
+                final listData = doc.data();
+                final isPinned = pinnedLists.contains(doc.id);
+
+                return ListModel(
+                  id: doc.id,
+                  name: listData['name'] ?? '',
+                  ownerId: listData['ownerId'] ?? '',
+                  members: List<String>.from(listData['members'] ?? []),
+                  note: listData['note'],
+                  tag: listData['tag'] ?? '',
+                  createdAt: (listData['createdAt'] as Timestamp?)?.toDate(),
+                  pinned: isPinned,
+                );
+              }).toList()..sort((a, b) {
+                // Sort by pinned first, then by createdAt
+                if (a.pinned != b.pinned) {
+                  return b.pinned ? 1 : -1; // Pinned lists first
+                }
+                // Then sort by createdAt (newest first)
+                if (a.createdAt == null && b.createdAt == null) return 0;
+                if (a.createdAt == null) return 1;
+                if (b.createdAt == null) return -1;
+                return b.createdAt!.compareTo(a.createdAt!);
+              });
+
+          return lists;
+        }).listen((lists) {
+          final int listsLength = lists.length;
+          if (lists.isNotEmpty) {
+            emit(ListSuccess(lists, listsLength));
+          } else {
+            emit(ListInitial());
+          }
+        });
   }
 
   Future<void> togglePin(String listId, bool pinned) async {

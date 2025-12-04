@@ -1,3 +1,4 @@
+import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ class AddItemContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 12),
+      padding: EdgeInsets.only(left: 12, right: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(color: Colors.grey, width: 1.5),
@@ -18,6 +19,7 @@ class AddItemContainer extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () async {
+              FocusScope.of(context).unfocus();
               if (context
                   .read<ItemsCubit>()
                   .itemNameController
@@ -27,6 +29,11 @@ class AddItemContainer extends StatelessWidget {
                 String? currentListId = context.read<ListCubit>().currentListId;
                 await context.read<ItemsCubit>().addItem(
                   listId: currentListId!,
+                );
+              } else if (context.read<ItemsCubit>().isEditing == true) {
+                ShowSnackBar.failureSnackBar(
+                  context: context,
+                  content: 'Save the changes.',
                 );
               }
             },
