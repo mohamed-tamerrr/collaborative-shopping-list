@@ -11,11 +11,11 @@ class LocalStorageService {
     try {
       final appDir = await getApplicationDocumentsDirectory();
       final profileDir = Directory(path.join(appDir.path, _profilePhotosDir));
-      
+
       if (!await profileDir.exists()) {
         await profileDir.create(recursive: true);
       }
-      
+
       return profileDir;
     } catch (e) {
       // Fallback: use temporary directory if path_provider fails
@@ -34,26 +34,27 @@ class LocalStorageService {
   }) async {
     try {
       final profileDir = await _getProfilePhotosDirectory();
-      
+
       // Use UID as filename to avoid conflicts (each user has one photo)
       // If extension is invalid, default to jpg
-      final validExtension = extension.isNotEmpty && 
-          RegExp(r'^[a-z0-9]+$').hasMatch(extension.toLowerCase())
+      final validExtension =
+          extension.isNotEmpty &&
+              RegExp(r'^[a-z0-9]+$').hasMatch(extension.toLowerCase())
           ? extension.toLowerCase()
           : 'jpg';
-      
+
       final fileName = '$uid.$validExtension';
       final filePath = path.join(profileDir.path, fileName);
       final file = File(filePath);
-      
+
       // Delete old photo if exists (to avoid conflicts)
       if (await file.exists()) {
         await file.delete();
       }
-      
+
       // Write new photo
       await file.writeAsBytes(bytes);
-      
+
       // Return the file path
       return filePath;
     } catch (e) {
@@ -65,19 +66,19 @@ class LocalStorageService {
   static Future<File?> getProfilePhotoFile(String uid) async {
     try {
       final profileDir = await _getProfilePhotosDirectory();
-      
+
       // Try common image extensions
       final extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-      
+
       for (final ext in extensions) {
         final filePath = path.join(profileDir.path, '$uid.$ext');
         final file = File(filePath);
-        
+
         if (await file.exists()) {
           return file;
         }
       }
-      
+
       return null;
     } catch (e) {
       return null;
@@ -101,5 +102,52 @@ class LocalStorageService {
     final file = await getProfilePhotoFile(uid);
     return file != null && await file.exists();
   }
-}
 
+  // Onboarding completion
+  static const String _onboardingKey = 'onboarding_completed';
+
+  static Future<void> setOnboardingCompleted(bool completed) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final file = File(path.join(appDir.path, '$_onboardingKey.txt'));
+      await file.writeAsString(completed.toString());
+    } catch (e) {
+      // Ignore errors
+    }
+  }
+
+  static Future<bool> isOnboardingCompleted() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final file = File(path.join(appDir.path, '$_onboardingKey.txt'));
+      print('Checking onboarding file at: ${file.path}');
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        print('Onboarding file content: $content');
+        return content.trim() == 'true';
+      }
+      print('Onboarding file does not exist - returning false');
+      return false;
+    } catch (e) {
+      print('Error checking onboarding: $e');
+      return false;
+    }
+  }
+
+  // Reset onboarding (useful for testing)
+  static Future<void> resetOnboarding() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final file = File(path.join(appDir.path, '$_onboardingKey.txt'));
+      print('Resetting onboarding file at: ${file.path}');
+      if (await file.exists()) {
+        await file.delete();
+        print('Onboarding file deleted successfully');
+      } else {
+        print('Onboarding file does not exist - nothing to delete');
+      }
+    } catch (e) {
+      print('Error resetting onboarding: $e');
+    }
+  }
+}
