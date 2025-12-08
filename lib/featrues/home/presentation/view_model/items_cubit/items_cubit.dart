@@ -18,7 +18,8 @@ class ItemsCubit extends Cubit<ItemsState> {
   final TextEditingController editItemNameController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
   final FirebaseServices _firebaseServices = FirebaseServices();
-  StreamSubscription? _subscription;
+
+  StreamSubscription? _subscription; // to check changes
   bool isEditing = false;
 
   void listenToItems(String listId) {
@@ -35,6 +36,7 @@ class ItemsCubit extends Cubit<ItemsState> {
         .listen((snapshot) {
           final items = snapshot.docs.map((doc) {
             return ItemModel.fromJson(doc);
+            // تحويل كل DocumentSnapshot إلى ItemModel باستخدام fromJson.
           }).toList();
 
           if (isClosed) return;
@@ -79,6 +81,7 @@ class ItemsCubit extends Cubit<ItemsState> {
       }
 
       itemNameController.clear();
+      // remove TextField
       await _firestoreService.addItem(
         listId: listId,
         itemName: itemName,

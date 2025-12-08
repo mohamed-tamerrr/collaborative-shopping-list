@@ -328,18 +328,20 @@ import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsView extends StatelessWidget {
+  // Stateless لأنها مش محتاجة state داخلي… كل حاجة جاية من StreamBuilder.
   const NotificationsView({super.key});
 
   static Future<void> showNotificationMessage(
+      //تعرض Snackbar لما تدوسي على إشعار.
     BuildContext context, {
-    required NotificationService notificationService,
+    required NotificationService notificationService, // mark as read
     required String notificationId,
     String? senderUserId,
     String? listId,
   }) async {
     final firebaseServices = FirebaseServices();
-    String senderName = 'Unknown User';
-    String listName = 'Unknown List';
+    String senderName = 'Unknown User'; // default value
+    String listName = 'Unknown List';// default value
 
     // Get sender name/email
     if (senderUserId != null) {
@@ -362,9 +364,11 @@ class NotificationsView extends StatelessWidget {
             .collection('lists')
             .doc(listId)
             .get();
+        // get the list from firestore
         if (listDoc.exists) {
           final listData = listDoc.data();
           listName = listData?['name'] ?? 'Unknown List';
+          // get list name
         }
       } catch (e) {
         // Handle error silently
@@ -413,6 +417,7 @@ class NotificationsView extends StatelessWidget {
     final notificationService = NotificationService();
     final firebaseServices = FirebaseServices();
     final currentUser = firebaseServices.currentUser;
+    // To Get The Current User
 
     if (currentUser == null) {
       return const Scaffold(
@@ -448,6 +453,7 @@ class NotificationsView extends StatelessWidget {
         ],
       ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        // synchronize notifications
         stream: notificationService.getNotifications(currentUser.uid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -480,6 +486,7 @@ class NotificationsView extends StatelessWidget {
                   .where((doc) => (doc.data()['read'] ?? false) == false)
                   .toList()
                 ..sort((a, b) {
+                  // descending sorting
                   final aTime = a.data()['createdAt'] as Timestamp?;
                   final bTime = b.data()['createdAt'] as Timestamp?;
                   if (aTime == null && bTime == null) return 0;

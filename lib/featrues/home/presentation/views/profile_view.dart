@@ -18,20 +18,20 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   final FirebaseServices _firebaseServices = FirebaseServices();
-  final ImagePicker _picker = ImagePicker();
-  bool _isUploading = false;
+  final ImagePicker _picker = ImagePicker(); // to choose an image
+  bool _isUploading = false; // to show circular progress indicator while uploading the image
 
   Future<void> _pickAndUpload() async {
     final user = _firebaseServices.currentUser;
-    if (user == null) return;
+    if (user == null) return; // no action will be taken (no change)
 
     final XFile? file = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 70,
+      imageQuality: 70, // image compression
     );
     if (file == null) return;
 
-    setState(() => _isUploading = true);
+    setState(() => _isUploading = true); // to show circular progress indicator while uploading the image
 
     try {
       await _firebaseServices.uploadProfilePhoto(uid: user.uid, file: file);
@@ -48,7 +48,7 @@ class _ProfileViewState extends State<ProfileView> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isUploading = false);
+        setState(() => _isUploading = false); // set as default
       }
     }
   }
@@ -57,6 +57,7 @@ class _ProfileViewState extends State<ProfileView> {
     await _firebaseServices.signOut();
     if (!mounted) return;
     Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    // prevent back navigation
   }
 
   @override

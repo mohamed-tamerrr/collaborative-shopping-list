@@ -16,7 +16,7 @@ part 'list_state.dart';
 class ListCubit extends Cubit<ListState> {
   ListCubit() : super(ListInitial());
   StreamSubscription? _subscription;
-  StreamSubscription? _userPinnedSubscription;
+  StreamSubscription? _userPinnedSubscription; // pinned lists
   String? currentListId;
   final FirebaseServices _firebaseServices = FirebaseServices();
   final NotificationService _notificationService = NotificationService();
@@ -26,7 +26,7 @@ class ListCubit extends Cubit<ListState> {
   final TextEditingController listTagController = TextEditingController();
   final TextEditingController listNoteController = TextEditingController();
 
-  final listKey = GlobalKey<FormState>();
+  final listKey = GlobalKey<FormState>(); // check the validity of the form before creating a list
 
   // Done
   Future<String?> createList(
@@ -242,6 +242,7 @@ class ListCubit extends Cubit<ListState> {
     try {
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         'members': FieldValue.arrayUnion([userId]),
+        // arrayUnion → إضافة فقط لو العضو غير موجود مسبقًا.
       });
     } catch (e) {
       if (context.mounted) {
