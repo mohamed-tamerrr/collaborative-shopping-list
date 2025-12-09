@@ -23,38 +23,26 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigate() async {
     if (!mounted) return;
 
-    print('=== SPLASH NAVIGATION START ===');
-
     // Check if onboarding is completed
     final isOnboardingCompleted =
         await LocalStorageService.isOnboardingCompleted();
 
-    print('Onboarding completed status: $isOnboardingCompleted');
-
     if (!isOnboardingCompleted) {
-      // Show onboarding if not completed
-      print('✅ Onboarding NOT completed - Navigating to OnboardingView');
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/onboarding');
       }
       return;
     }
 
-    // If onboarding is completed, check auth and navigate
-    print('❌ Onboarding already completed - Skipping to login/home');
     final user = FirebaseAuth.instance.currentUser;
 
     if (!mounted) return;
 
     if (user != null) {
-      print('User is logged in - Navigating to /home');
       Navigator.pushReplacementNamed(context, '/home');
     } else {
-      print('User is NOT logged in - Navigating to /login');
       Navigator.pushReplacementNamed(context, '/login');
     }
-
-    print('=== SPLASH NAVIGATION END ===');
   }
 
   @override
@@ -69,7 +57,9 @@ class _SplashScreenState extends State<SplashScreen> {
             colors: [AppColors.navyBlue, AppColors.mediumNavy],
           ),
         ),
-        child: SafeArea(child: SplashAnimatedContent(onGetStarted: _navigate)),
+        child: SafeArea(
+          child: SplashAnimatedContent(onGetStarted: _navigate),
+        ),
       ),
     );
   }

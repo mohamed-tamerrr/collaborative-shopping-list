@@ -1,13 +1,12 @@
-import 'dart:io';
-
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firebase_services.dart';
-import 'package:final_project/core/services/local_storage_service.dart';
-import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+
+import 'widgets/profile_avatar.dart';
+import 'widgets/profile_info_section.dart';
+import 'widgets/signout_button.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -18,217 +17,78 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   final FirebaseServices _firebaseServices = FirebaseServices();
-  final ImagePicker _picker = ImagePicker(); // to choose an image
-  bool _isUploading = false; // to show circular progress indicator while uploading the image
+  bool _isUploading = false;
 
   Future<void> _pickAndUpload() async {
     final user = _firebaseServices.currentUser;
-    if (user == null) return; // no action will be taken (no change)
+    if (user == null) return;
 
-    final XFile? file = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 70, // image compression
-    );
+    final file = await _firebaseServices.pickProfileImage();
     if (file == null) return;
 
-    setState(() => _isUploading = true); // to show circular progress indicator while uploading the image
+    setState(() => _isUploading = true);
 
     try {
-      await _firebaseServices.uploadProfilePhoto(uid: user.uid, file: file);
-      if (!mounted) return;
+      await _firebaseServices.uploadProfilePhoto(
+        uid: user.uid,
+        file: file,
+      );
       ShowSnackBar.successSnackBar(
         context: context,
-        content: 'Profile photo updated',
+        content: 'Photo updated',
       );
     } catch (e) {
-      if (!mounted) return;
       ShowSnackBar.failureSnackBar(
         context: context,
-        content: 'Uploading photo failed: ${e.toString()}',
+        content: 'Failed: $e',
       );
     } finally {
-      if (mounted) {
-        setState(() => _isUploading = false); // set as default
-      }
+      setState(() => _isUploading = false);
     }
   }
 
-  Future<void> _signOut() async {
-    await _firebaseServices.signOut();
-    if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-    // prevent back navigation
+  void _signOut() {
+    _firebaseServices.signOut();
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/login',
+      (_) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final user = _firebaseServices.currentUser;
 
-    if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please sign in to view your profile.')),
-      );
-    }
-
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: _firebaseServices.userProfileStream(user.uid),
+      stream: _firebaseServices.userProfileStream(user!.uid),
       builder: (context, snapshot) {
         final data = snapshot.data?.data();
-        final String name = data?['name'] ?? user.displayName ?? 'Guest';
-        final String email = data?['email'] ?? user.email ?? 'No email';
-        final String? photoUrl = data?['photoUrl'] as String?;
+        final name = data?['name'] ?? 'Guest';
+        final email = data?['email'] ?? 'No email';
+        final photoUrl = data?['photoUrl'];
 
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profile'),
             centerTitle: true,
-            backgroundColor: AppColors.white,
-            elevation: 0,
+            backgroundColor: Colors.white,
           ),
-          body: SafeArea(
-            child: Padding(
-              padding: AppStyles.screenPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: AppStyles.spacingXL),
-                  Center(
-                    child: Stack(
-                      children: [
-                        FutureBuilder<File?>(
-                          future:
-                              photoUrl != null && photoUrl!.startsWith('local:')
-                              ? LocalStorageService.getProfilePhotoFile(
-                                  photoUrl!.substring(6),
-                                )
-                              : Future.value(null),
-                          builder: (context, snapshot) {
-                            if (photoUrl != null &&
-                                photoUrl!.startsWith('local:')) {
-                              // Local photo
-                              if (snapshot.hasData && snapshot.data != null) {
-                                return CircleAvatar(
-                                  radius: 60,
-                                  backgroundColor: AppColors.lightGrey,
-                                  backgroundImage: FileImage(snapshot.data!),
-                                );
-                              }
-                              return CircleAvatar(
-                                radius: 60,
-                                backgroundColor: AppColors.lightGrey,
-                                child: const Icon(
-                                  Icons.person,
-                                  size: 48,
-                                  color: AppColors.grey,
-                                ),
-                              );
-                            } else if (photoUrl != null &&
-                                photoUrl!.isNotEmpty) {
-                              // Network photo (backward compatibility)
-                              return CircleAvatar(
-                                radius: 60,
-                                backgroundColor: AppColors.lightGrey,
-                                backgroundImage: NetworkImage(photoUrl!),
-                                onBackgroundImageError: (_, __) {},
-                                child: const Icon(
-                                  Icons.person,
-                                  size: 48,
-                                  color: AppColors.grey,
-                                ),
-                              );
-                            } else {
-                              // No photo
-                              return CircleAvatar(
-                                radius: 60,
-                                backgroundColor: AppColors.lightGrey,
-                                child: const Icon(
-                                  Icons.person,
-                                  size: 48,
-                                  color: AppColors.grey,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 4,
-                          child: GestureDetector(
-                            onTap: _isUploading ? null : _pickAndUpload,
-                            child: CircleAvatar(
-                              radius: 18,
-                              backgroundColor: AppColors.orange,
-                              child: _isUploading
-                                  ? const SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              AppColors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.edit,
-                                      size: 16,
-                                      color: AppColors.white,
-                                    ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppStyles.spacingXXXL),
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    color: AppColors.lightGrey.withValues(alpha: 0.4),
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.person,
-                        color: AppColors.mediumNavy,
-                      ),
-                      title: Text('Name', style: AppStyles.label()),
-                      subtitle: Text(name, style: AppStyles.bodyMedium()),
-                    ),
-                  ),
-                  const SizedBox(height: AppStyles.spacingM),
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    color: AppColors.lightGrey.withValues(alpha: 0.4),
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.email,
-                        color: AppColors.mediumNavy,
-                      ),
-                      title: Text('Email', style: AppStyles.label()),
-                      subtitle: Text(email, style: AppStyles.bodyMedium()),
-                    ),
-                  ),
-                  const Spacer(),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _signOut,
-                      icon: const Icon(Icons.logout),
-                      label: const Text('Sign Out'),
-                      style: AppStyles.primaryButtonStyle.copyWith(
-                        minimumSize: MaterialStateProperty.all(
-                          const Size(double.infinity, 56),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          body: Padding(
+            padding: AppStyles.screenPadding,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                ProfileAvatar(
+                  photoUrl: photoUrl,
+                  isUploading: _isUploading,
+                  onPickImage: _pickAndUpload,
+                ),
+                const SizedBox(height: 40),
+                ProfileInfoSection(name: name, email: email),
+                const Spacer(),
+                SignOutButton(onSignOut: _signOut),
+              ],
             ),
           ),
         );

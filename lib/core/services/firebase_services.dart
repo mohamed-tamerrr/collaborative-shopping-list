@@ -10,31 +10,49 @@ class FirebaseServices {
   FirebaseServices();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   User? get currentUser => _auth.currentUser;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<XFile?> pickProfileImage() async {
+    try {
+      final XFile? file = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
+      return file;
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<UserCredential> signUp({
     required String name,
     required String email,
     required String password,
   }) async {
-    final credential = await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    final credential = await _auth
+        .createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
     await credential.user?.updateDisplayName(name);
 
-    await _firestore.collection('users').doc(credential.user!.uid).set({
-      'name': name,
-      'email': email,
-      'photoUrl': credential.user?.photoURL,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    await _firestore
+        .collection('users')
+        .doc(credential.user!.uid)
+        .set({
+          'name': name,
+          'email': email,
+          'photoUrl': credential.user?.photoURL,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
 
     return credential;
   }
@@ -43,12 +61,16 @@ class FirebaseServices {
     required String email,
     required String password,
   }) {
-    return _auth.signInWithEmailAndPassword(email: email, password: password);
+    return _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
   Future<void> signOut() => _auth.signOut();
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> userProfileStream(String uid) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>>
+  userProfileStream(String uid) {
     return _firestore.collection('users').doc(uid).snapshots();
   }
 
@@ -56,7 +78,9 @@ class FirebaseServices {
     required String uid,
     required String name,
   }) async {
-    await _firestore.collection('users').doc(uid).update({'name': name});
+    await _firestore.collection('users').doc(uid).update({
+      'name': name,
+    });
     await _auth.currentUser?.updateDisplayName(name);
   }
 
@@ -66,24 +90,28 @@ class FirebaseServices {
   }) async {
     try {
       final Uint8List bytes = await file.readAsBytes();
-      
+
       // Get file extension properly
       String extension = file.name.split('.').last.toLowerCase();
-      if (extension.isEmpty || !RegExp(r'^[a-z0-9]+$').hasMatch(extension)) {
-        extension = 'jpg'; // Default to jpg if extension is invalid
+      if (extension.isEmpty ||
+          !RegExp(r'^[a-z0-9]+$').hasMatch(extension)) {
+        extension =
+            'jpg'; // Default to jpg if extension is invalid
       }
-      
+
       // Save photo locally
-      final localPath = await LocalStorageService.saveProfilePhoto(
-        uid: uid,
-        bytes: bytes,
-        extension: extension,
-      );
+      final localPath =
+          await LocalStorageService.saveProfilePhoto(
+            uid: uid,
+            bytes: bytes,
+            extension: extension,
+          );
 
       // Store indicator in Firestore that photo is stored locally
 
       await _firestore.collection('users').doc(uid).update({
-        'photoUrl': 'local:$uid', // Store indicator, not the full path
+        'photoUrl':
+            'local:$uid', // Store indicator, not the full path
         'hasLocalPhoto': true,
       });
 
@@ -105,7 +133,9 @@ class FirebaseServices {
   // Get local photo file path for a user
   Future<String?> getLocalPhotoPath(String uid) async {
     try {
-      final file = await LocalStorageService.getProfilePhotoFile(uid);
+      final file = await LocalStorageService.getProfilePhotoFile(
+        uid,
+      );
       return file?.path;
     } catch (e) {
       return null;
@@ -118,7 +148,9 @@ class FirebaseServices {
   }
 
   // Get user by email
-  Future<DocumentSnapshot<Map<String, dynamic>>?> getUserByEmail(String email) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>?> getUserByEmail(
+    String email,
+  ) async {
     try {
       final querySnapshot = await _firestore
           .collection('users')
@@ -135,7 +167,9 @@ class FirebaseServices {
   }
 
   // Get user by UID
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserByUid(String uid) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserByUid(
+    String uid,
+  ) async {
     return await _firestore.collection('users').doc(uid).get();
   }
 }
