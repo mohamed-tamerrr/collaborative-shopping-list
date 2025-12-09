@@ -72,78 +72,129 @@ class _OnboardingPageState extends State<OnboardingPage>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Animated Icon/Illustration
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _iconFade.value,
-                child: Transform.scale(scale: _iconScale.value, child: child),
-              );
-            },
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.white.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenHeight < 700;
+    final isVerySmallScreen = screenHeight < 600;
+
+    // Calculate responsive sizes
+    final iconSize = isVerySmallScreen
+        ? screenWidth * 0.35
+        : isSmallScreen
+            ? screenWidth * 0.4
+            : screenWidth * 0.5;
+    final iconInnerSize = iconSize * 0.5;
+    final titleFontSizeRaw = isVerySmallScreen
+        ? screenWidth * 0.08
+        : isSmallScreen
+            ? screenWidth * 0.09
+            : screenWidth * 0.11;
+    final titleFontSize = titleFontSizeRaw < 28.0
+        ? 28.0
+        : titleFontSizeRaw > 42.0
+            ? 42.0
+            : titleFontSizeRaw;
+    final descriptionFontSize = isVerySmallScreen ? 14.0 : isSmallScreen ? 15.0 : 16.0;
+    final horizontalPadding = screenWidth * 0.06;
+    final spacingBetweenIconAndTitle = isVerySmallScreen ? 24.0 : isSmallScreen ? 32.0 : 48.0;
+    final spacingBetweenTitleAndDescription = isVerySmallScreen ? 12.0 : 16.0;
+
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom - 200,
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: isVerySmallScreen ? 20.0 : 40.0),
+              
+              // Animated Icon/Illustration
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _iconFade.value,
+                    child: Transform.scale(scale: _iconScale.value, child: child),
+                  );
+                },
+                child: Container(
+                  width: iconSize,
+                  height: iconSize,
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    widget.data.icon,
+                    size: iconInnerSize,
+                    color: AppColors.white,
+                  ),
+                ),
               ),
-              child: Icon(widget.data.icon, size: 100, color: AppColors.white),
-            ),
-          ),
 
-          const SizedBox(height: 48),
+              SizedBox(height: spacingBetweenIconAndTitle),
 
-          // Animated Title
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _textFade.value,
-                child: SlideTransition(position: _textSlide, child: child),
-              );
-            },
-            child: Text(
-              widget.data.title,
-              style: const TextStyle(
-                fontSize: 42,
-                fontWeight: FontWeight.w800,
-                color: AppColors.white,
-                letterSpacing: 1.2,
+              // Animated Title
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _textFade.value,
+                    child: SlideTransition(position: _textSlide, child: child),
+                  );
+                },
+                child: Text(
+                  widget.data.title,
+                  style: TextStyle(
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.white,
+                    letterSpacing: 1.2,
+                    height: 1.2,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ),
 
-          const SizedBox(height: 16),
+              SizedBox(height: spacingBetweenTitleAndDescription),
 
-          // Animated Description
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _textFade.value,
-                child: SlideTransition(position: _textSlide, child: child),
-              );
-            },
-            child: Text(
-              widget.data.description,
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.white.withValues(alpha: 0.8),
-                fontWeight: FontWeight.w300,
-                letterSpacing: 0.5,
+              // Animated Description
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _textFade.value,
+                    child: SlideTransition(position: _textSlide, child: child),
+                  );
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                  child: Text(
+                    widget.data.description,
+                    style: TextStyle(
+                      fontSize: descriptionFontSize,
+                      color: AppColors.white.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 0.5,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: isVerySmallScreen ? 4 : 5,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 3,
-            ),
+
+              SizedBox(height: isVerySmallScreen ? 20.0 : 40.0),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

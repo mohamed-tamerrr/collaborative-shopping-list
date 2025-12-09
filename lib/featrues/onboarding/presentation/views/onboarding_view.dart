@@ -70,6 +70,11 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenHeight < 700;
+    final isVerySmallScreen = screenHeight < 600;
+
     return Scaffold(
       backgroundColor: AppColors.navyBlue,
       body: Container(
@@ -81,65 +86,76 @@ class _OnboardingViewState extends State<OnboardingView> {
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              // Skip button
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    onPressed: _skipOnboarding,
-                    child: Text(
-                      'Skip',
-                      style: TextStyle(
-                        color: AppColors.white.withValues(alpha: 0.7),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.underline,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                children: [
+                  // Skip button
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                      vertical: isSmallScreen ? 12.0 : 24.0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        onPressed: _skipOnboarding,
+                        child: Text(
+                          'Skip',
+                          style: TextStyle(
+                            color: AppColors.white.withValues(alpha: 0.7),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
 
-              // PageView
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: _onPageChanged,
-                  itemCount: _pages.length,
-                  itemBuilder: (context, index) {
-                    return OnboardingPage(
-                      data: _pages[index],
-                      pageIndex: index,
-                    );
-                  },
-                ),
-              ),
-
-              // Page indicator and navigation
-              Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Column(
-                  children: [
-                    // Page indicators
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        _pages.length,
-                        (index) => _buildPageIndicator(index == _currentPage),
-                      ),
+                  // PageView
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: _onPageChanged,
+                      itemCount: _pages.length,
+                      itemBuilder: (context, index) {
+                        return OnboardingPage(
+                          data: _pages[index],
+                          pageIndex: index,
+                        );
+                      },
                     ),
+                  ),
 
-                    const SizedBox(height: 24),
+                  // Page indicator and navigation
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.08,
+                      vertical: isSmallScreen ? 16.0 : 32.0,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Page indicators
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            _pages.length,
+                            (index) => _buildPageIndicator(index == _currentPage),
+                          ),
+                        ),
 
-                    // Get Started button with gradient (matching splash)
-                    _buildGradientButton(),
-                  ],
-                ),
-              ),
-            ],
+                        SizedBox(height: isSmallScreen ? 16.0 : 24.0),
+
+                        // Get Started button with gradient (matching splash)
+                        _buildGradientButton(),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
