@@ -52,10 +52,7 @@ class _SignInFormState extends State<SignInForm> {
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       if (!mounted) return;
-      ShowSnackBar.failureSnackBar(
-        context: context,
-        content: e.toString(),
-      );
+      ShowSnackBar.failureSnackBar(context: context, content: e.toString());
     }
 
     if (mounted) setState(() => _loading = false);
@@ -66,17 +63,18 @@ class _SignInFormState extends State<SignInForm> {
     return Form(
       key: _formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomTextField(
             controller: email,
             labelText: 'Email',
             validator: AppValidation.validateEmail,
             preFixIcon: const Icon(
-              Icons.email,
+              Icons.email_outlined,
               color: AppColors.mediumNavy,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
           CustomTextField(
             controller: password,
@@ -84,16 +82,18 @@ class _SignInFormState extends State<SignInForm> {
             validator: AppValidation.validatePassword,
             isPassword: true,
             preFixIcon: const Icon(
-              Icons.lock,
+              Icons.lock_outlined,
               color: AppColors.mediumNavy,
             ),
           ),
 
+          const SizedBox(height: 12),
           const ForgotPasswordButton(),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 32),
           SignInButton(isLoading: _loading, onPressed: _signIn),
 
+          const SizedBox(height: 8),
           const FooterSignUp(),
         ],
       ),

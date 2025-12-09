@@ -64,7 +64,7 @@ class SplashButtonSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Get Started',
+              'Explore List-Mate',
               style: TextStyle(
                 color: AppColors.white,
                 fontSize: 18,
@@ -72,10 +72,7 @@ class SplashButtonSection extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8),
-            Icon(
-              Icons.arrow_forward_rounded,
-              color: AppColors.white,
-            ),
+            Icon(Icons.arrow_forward_rounded, color: AppColors.white),
           ],
         ),
       ),

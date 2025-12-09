@@ -4,7 +4,7 @@ import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/featrues/auth/presentation/views/login_view.dart';
 import 'package:final_project/featrues/auth/presentation/views/sign_up_view.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
-import 'package:final_project/featrues/home/presentation/views/home_view.dart';
+import 'package:final_project/featrues/home/presentation/views/main_nav_view.dart';
 import 'package:final_project/featrues/home/presentation/views/profile_view.dart';
 import 'package:final_project/featrues/onboarding/presentation/views/onboarding_view.dart';
 import 'package:final_project/firebase_options.dart';
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         routes: {
-          '/home': (context) => const HomeView(),
+          '/home': (context) => const MainNavView(),
           '/login': (context) => const SignInScreen(),
           '/signup': (context) => const SignUpScreen(),
           '/profile': (context) => const ProfileView(),

@@ -81,28 +81,40 @@ class _OnboardingPageState extends State<OnboardingPage>
     final iconSize = isVerySmallScreen
         ? screenWidth * 0.35
         : isSmallScreen
-            ? screenWidth * 0.4
-            : screenWidth * 0.5;
+        ? screenWidth * 0.4
+        : screenWidth * 0.5;
     final iconInnerSize = iconSize * 0.5;
     final titleFontSizeRaw = isVerySmallScreen
         ? screenWidth * 0.08
         : isSmallScreen
-            ? screenWidth * 0.09
-            : screenWidth * 0.11;
+        ? screenWidth * 0.09
+        : screenWidth * 0.11;
     final titleFontSize = titleFontSizeRaw < 28.0
         ? 28.0
         : titleFontSizeRaw > 42.0
-            ? 42.0
-            : titleFontSizeRaw;
-    final descriptionFontSize = isVerySmallScreen ? 14.0 : isSmallScreen ? 15.0 : 16.0;
+        ? 42.0
+        : titleFontSizeRaw;
+    final descriptionFontSize = isVerySmallScreen
+        ? 14.0
+        : isSmallScreen
+        ? 15.0
+        : 16.0;
     final horizontalPadding = screenWidth * 0.06;
-    final spacingBetweenIconAndTitle = isVerySmallScreen ? 24.0 : isSmallScreen ? 32.0 : 48.0;
+    final spacingBetweenIconAndTitle = isVerySmallScreen
+        ? 24.0
+        : isSmallScreen
+        ? 32.0
+        : 48.0;
     final spacingBetweenTitleAndDescription = isVerySmallScreen ? 12.0 : 16.0;
 
     return SingleChildScrollView(
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom - 200,
+          minHeight:
+              screenHeight -
+              MediaQuery.of(context).padding.top -
+              MediaQuery.of(context).padding.bottom -
+              200,
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -111,14 +123,17 @@ class _OnboardingPageState extends State<OnboardingPage>
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: isVerySmallScreen ? 20.0 : 40.0),
-              
+
               // Animated Icon/Illustration
               AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
                   return Opacity(
                     opacity: _iconFade.value,
-                    child: Transform.scale(scale: _iconScale.value, child: child),
+                    child: Transform.scale(
+                      scale: _iconScale.value,
+                      child: child,
+                    ),
                   );
                 },
                 child: Container(

@@ -26,7 +26,7 @@ class SplashLogo extends StatelessWidget {
       ),
       child: const Icon(
         Icons.shopping_bag_rounded,
-        size: 70,
+        size: 80,
         color: AppColors.white,
       ),
     );
