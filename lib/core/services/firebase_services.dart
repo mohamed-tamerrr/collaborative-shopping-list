@@ -81,7 +81,7 @@ class FirebaseServices {
       );
 
       // Store indicator in Firestore that photo is stored locally
-      // We use 'local:' prefix to indicate it's a local file
+
       await _firestore.collection('users').doc(uid).update({
         'photoUrl': 'local:$uid', // Store indicator, not the full path
         'hasLocalPhoto': true,

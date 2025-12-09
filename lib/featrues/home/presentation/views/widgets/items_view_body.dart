@@ -55,65 +55,75 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
               onRename: updateName,
             ),
             const SizedBox(height: AppStyles.spacingM),
-            FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
-              future: _getMembersData(widget.listModel.members),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox(
-                    height: 35,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.orange,
-                        ),
-                      ),
-                    ),
-                  );
+            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection('lists')
+                  .doc(widget.listModel.id)
+                  .snapshots(),
+              builder: (context, listSnapshot) {
+                if (!listSnapshot.hasData || !listSnapshot.data!.exists) {
+                  return const SizedBox.shrink();
                 }
 
-                final photoUrls = <String?>[];
-                final emails = <String>[];
+                final members =
+                    List<String>.from(listSnapshot.data!.data()?['members'] ?? []);
 
-                if (snapshot.hasData && snapshot.data != null) {
-                  for (var memberDoc in snapshot.data!) {
-                    if (memberDoc.exists) {
-                      final data = memberDoc.data();
-                      photoUrls.add(data?['photoUrl'] as String?);
-                      emails.add(data?['email'] ?? 'Unknown');
-                    } else {
-                      photoUrls.add(null);
-                      emails.add('Unknown');
-                    }
-                  }
-                }
-
-                // If no data, create list with nulls for all members
-                if (photoUrls.isEmpty && widget.listModel.members.isNotEmpty) {
-                  photoUrls.addAll(
-                    List.filled(widget.listModel.members.length, null),
-                  );
-                  emails.addAll(
-                    List.filled(widget.listModel.members.length, 'Unknown'),
-                  );
-                }
-
-                return GroupAvatars(
-                  imageUrls: photoUrls,
-                  memberEmails: emails,
-                  onAvatarTap: (email) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Email'),
-                        content: Text(email),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('OK'),
+                return FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+                  future: _getMembersData(members),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                        height: 35,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.orange,
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                      );
+                    }
+
+                    final photoUrls = <String?>[];
+                    final emails = <String>[];
+
+                    if (snapshot.hasData && snapshot.data != null) {
+                      for (var memberDoc in snapshot.data!) {
+                        if (memberDoc.exists) {
+                          final data = memberDoc.data();
+                          photoUrls.add(data?['photoUrl'] as String?);
+                          emails.add(data?['email'] ?? 'Unknown');
+                        } else {
+                          photoUrls.add(null);
+                          emails.add('Unknown');
+                        }
+                      }
+                    }
+
+                    if (photoUrls.isEmpty && members.isNotEmpty) {
+                      photoUrls.addAll(List.filled(members.length, null));
+                      emails.addAll(List.filled(members.length, 'Unknown'));
+                    }
+
+                    return GroupAvatars(
+                      imageUrls: photoUrls,
+                      memberEmails: emails,
+                      onAvatarTap: (email) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Email'),
+                            content: Text(email),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
                 );

@@ -240,10 +240,87 @@ class ListCubit extends Cubit<ListState> {
     required BuildContext context,
   }) async {
     try {
+      final currentUser = _firebaseServices.currentUser;
+      if (currentUser == null) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Please sign in to invite users',
+          );
+        }
+        return;
+      }
+
+      // Verify user has access to this list and is the owner
+      final listDoc = await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .get();
+
+      if (!listDoc.exists) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'List not found',
+          );
+        }
+        return;
+      }
+
+      final listData = listDoc.data();
+      final ownerId = listData?['ownerId'] ?? '';
+      final currentMembers = List<String>.from(listData?['members'] ?? []);
+
+      // Only owner can invite users
+      if (ownerId != currentUser.uid) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Only the owner can add members to this list',
+          );
+        }
+        return;
+      }
+
+      // Check if user is already a member
+      if (currentMembers.contains(userId)) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'User is already a member of this list',
+          );
+        }
+        return;
+      }
+
+      // Add user to list
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         'members': FieldValue.arrayUnion([userId]),
-        // arrayUnion → إضافة فقط لو العضو غير موجود مسبقًا.
       });
+
+      // Send notification to the invited user
+      final listName = listData?['name'] ?? 'a list';
+      final ownerName =
+          currentUser.displayName ?? currentUser.email ?? 'Someone';
+      try {
+        await _notificationService.createNotification(
+          recipientUserId: userId,
+          title: 'List Shared',
+          message: '$ownerName added you to "$listName" list',
+          type: 'list_shared',
+          listId: listId,
+          senderUserId: currentUser.uid,
+        );
+      } catch (e) {
+        log('Error sending notification to $userId: $e');
+      }
+
+      if (context.mounted) {
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'User added successfully',
+        );
+      }
     } catch (e) {
       if (context.mounted) {
         ShowSnackBar.failureSnackBar(context: context);
@@ -258,9 +335,81 @@ class ListCubit extends Cubit<ListState> {
     required BuildContext context,
   }) async {
     try {
+      final currentUser = _firebaseServices.currentUser;
+      if (currentUser == null) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Please sign in to remove users',
+          );
+        }
+        return;
+      }
+
+      // Verify user has access to this list and is the owner
+      final listDoc = await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(listId)
+          .get();
+
+      if (!listDoc.exists) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'List not found',
+          );
+        }
+        return;
+      }
+
+      final listData = listDoc.data();
+      final ownerId = listData?['ownerId'] ?? '';
+      final currentMembers = List<String>.from(listData?['members'] ?? []);
+
+      // Only owner can remove users
+      if (ownerId != currentUser.uid) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Only the owner can remove members from this list',
+          );
+        }
+        return;
+      }
+
+      // Prevent removing the owner
+      if (userId == ownerId) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'Cannot remove the owner from the list',
+          );
+        }
+        return;
+      }
+
+      // Check if user is actually a member
+      if (!currentMembers.contains(userId)) {
+        if (context.mounted) {
+          ShowSnackBar.failureSnackBar(
+            context: context,
+            content: 'User is not a member of this list',
+          );
+        }
+        return;
+      }
+
+      // Remove user from list
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         'members': FieldValue.arrayRemove([userId]),
       });
+
+      if (context.mounted) {
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'User removed successfully',
+        );
+      }
     } catch (e) {
       if (context.mounted) {
         ShowSnackBar.failureSnackBar(context: context);
