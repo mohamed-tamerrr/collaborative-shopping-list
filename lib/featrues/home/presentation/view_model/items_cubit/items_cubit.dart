@@ -15,12 +15,11 @@ class ItemsCubit extends Cubit<ItemsState> {
   ItemsCubit() : super(ItemsInitial());
 
   final TextEditingController itemNameController = TextEditingController();
-  final TextEditingController editItemNameController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
   final FirebaseServices _firebaseServices = FirebaseServices();
 
   StreamSubscription? _subscription; // to check changes
-  bool isEditing = false;
+  String? editingItemId;
 
   void listenToItems(String listId) {
     emit(ItemsLoading());

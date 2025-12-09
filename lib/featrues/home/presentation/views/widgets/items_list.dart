@@ -56,13 +56,11 @@ class ItemList extends StatelessWidget {
                   index: index,
                   item: item,
                   onChanged: (bool? newValue) {
-                    context.read<ItemsCubit>().isEditing
-                        ? () {}
-                        : context.read<ItemsCubit>().toggleItemDone(
-                            listId: listId,
-                            itemId: item.id,
-                            currentStatus: item.done,
-                          );
+                    context.read<ItemsCubit>().toggleItemDone(
+                      listId: listId,
+                      itemId: item.id,
+                      currentStatus: item.done,
+                    );
                   },
                 ),
               ),

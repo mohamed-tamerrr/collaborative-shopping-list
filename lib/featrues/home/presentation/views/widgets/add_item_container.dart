@@ -1,4 +1,3 @@
-import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/presentation/view_model/items_cubit/items_cubit.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +28,6 @@ class AddItemContainer extends StatelessWidget {
                 String? currentListId = context.read<ListCubit>().currentListId;
                 await context.read<ItemsCubit>().addItem(
                   listId: currentListId!,
-                );
-              } else if (context.read<ItemsCubit>().isEditing == true) {
-                ShowSnackBar.failureSnackBar(
-                  context: context,
-                  content: 'Save the changes.',
                 );
               }
             },

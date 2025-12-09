@@ -24,7 +24,8 @@ class CustomChecklistItem extends StatefulWidget {
 }
 
 class _CustomChecklistItemState extends State<CustomChecklistItem> {
-  bool isEnabled = true;
+  TextEditingController editItemNameController = TextEditingController();
+  bool? isEditingThisItem;
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +37,12 @@ class _CustomChecklistItemState extends State<CustomChecklistItem> {
 
     return GestureDetector(
       onLongPress: () {
-        if (!context.read<ItemsCubit>().isEditing) {
-          context.read<ItemsCubit>().editItemNameController.text =
-              widget.item.name;
-          isEnabled = false;
-          setState(() {
-            context.read<ItemsCubit>().isEditing = !context
-                .read<ItemsCubit>()
-                .isEditing;
-          });
-        }
+        BlocProvider.of<ItemsCubit>(context).editingItemId = widget.item.id;
+        editItemNameController.text = widget.item.name;
+        isEditingThisItem =
+            BlocProvider.of<ItemsCubit>(context).editingItemId ==
+            widget.item.name;
+        setState(() {});
       },
       child: Container(
         decoration: BoxDecoration(
@@ -56,29 +53,18 @@ class _CustomChecklistItemState extends State<CustomChecklistItem> {
         child: Center(
           child: IntrinsicHeight(
             child: CheckboxListTile(
-              enabled: isEnabled,
-              title: context.read<ItemsCubit>().isEditing
+              title: isEditingThisItem != null || isEditingThisItem == true
                   ? CustomTextField(
+                      controller: editItemNameController,
                       item: widget.item,
                       onTap: () {
-                        context.read<ItemsCubit>().isEditing = false;
-                        isEnabled = true;
+                        isEditingThisItem = null;
                         context.read<ItemsCubit>().renameItem(
                           listId: context.read<ListCubit>().currentListId!,
                           itemId: widget.item.id,
-                          newName:
-                              context
-                                      .read<ItemsCubit>()
-                                      .editItemNameController
-                                      .text
-                                      .trim() ==
-                                  ''
+                          newName: editItemNameController.text.trim() == ''
                               ? widget.item.name
-                              : context
-                                    .read<ItemsCubit>()
-                                    .editItemNameController
-                                    .text
-                                    .trim(),
+                              : editItemNameController.text.trim(),
                           context: context,
                         );
                         setState(() {});
@@ -90,6 +76,11 @@ class _CustomChecklistItemState extends State<CustomChecklistItem> {
                         fontSize: 16,
                         color: isChecked ? AppColors.mediumNavy : Colors.black,
                         fontWeight: FontWeight.w500,
+                        decorationColor: AppColors.navyBlue,
+                        decoration: isChecked
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                        decorationThickness: 2,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -108,14 +99,21 @@ class _CustomChecklistItemState extends State<CustomChecklistItem> {
 }
 
 class CustomTextField extends StatelessWidget {
-  const CustomTextField({super.key, required this.item, this.onTap});
+  const CustomTextField({
+    super.key,
+    required this.item,
+    this.onTap,
+    required this.controller,
+  });
   final ItemModel item;
   final void Function()? onTap;
+  final TextEditingController controller;
   @override
   Widget build(BuildContext context) {
     return TextField(
+      style: TextStyle(fontSize: 16),
       autofocus: true,
-      controller: context.read<ItemsCubit>().editItemNameController,
+      controller: controller,
       decoration: InputDecoration(
         suffixIconConstraints: BoxConstraints(maxHeight: double.infinity),
         suffixIcon: GestureDetector(
