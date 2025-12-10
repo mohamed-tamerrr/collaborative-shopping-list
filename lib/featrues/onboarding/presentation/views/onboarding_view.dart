@@ -1,5 +1,6 @@
 import 'package:final_project/core/services/local_storage_service.dart';
 import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/featrues/onboarding/data/models/onboarding_page_data.dart';
 import 'package:final_project/featrues/onboarding/presentation/widgets/onboarding_page.dart';
 import 'package:flutter/material.dart';
 
@@ -103,7 +104,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                         child: Text(
                           'Skip',
                           style: TextStyle(
-                            color: AppColors.white.withValues(alpha: 0.7),
+                            color: AppColors.white.withValues(
+                              alpha: 0.7,
+                            ),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             decoration: TextDecoration.underline,
@@ -139,14 +142,19 @@ class _OnboardingViewState extends State<OnboardingView> {
                       children: [
                         // Page indicators
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
                           children: List.generate(
                             _pages.length,
-                            (index) => _buildPageIndicator(index == _currentPage),
+                            (index) => _buildPageIndicator(
+                              index == _currentPage,
+                            ),
                           ),
                         ),
 
-                        SizedBox(height: isSmallScreen ? 16.0 : 24.0),
+                        SizedBox(
+                          height: isSmallScreen ? 16.0 : 24.0,
+                        ),
 
                         // Get Started button with gradient (matching splash)
                         _buildGradientButton(),
@@ -208,7 +216,9 @@ class _OnboardingViewState extends State<OnboardingView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+              _currentPage == _pages.length - 1
+                  ? 'Get Started'
+                  : 'Next',
               style: const TextStyle(
                 color: AppColors.white,
                 fontSize: 18,
@@ -226,16 +236,4 @@ class _OnboardingViewState extends State<OnboardingView> {
       ),
     );
   }
-}
-
-class OnboardingPageData {
-  final String title;
-  final String description;
-  final IconData icon;
-
-  OnboardingPageData({
-    required this.title,
-    required this.description,
-    required this.icon,
-  });
 }
