@@ -135,7 +135,9 @@ class ListCubit extends Cubit<ListState> {
       }
 
       final listData = listDoc.data();
+      final members = List<String>.from(listData?['members'] ?? []);
       final ownerId = listData?['ownerId'] ?? '';
+      final listName = listData?['name'] ?? 'a list';
 
       // Only owner can delete the list
       if (ownerId != currentUser.uid) {
@@ -149,6 +151,30 @@ class ListCubit extends Cubit<ListState> {
       }
 
       emit(ListLoading());
+
+      // Send notifications to all members except the owner
+      final ownerName =
+          currentUser.displayName ?? currentUser.email ?? 'Someone';
+      final membersToNotify = members.where((memberId) => memberId != ownerId).toList();
+
+      if (membersToNotify.isNotEmpty) {
+        for (final memberId in membersToNotify) {
+          try {
+            await _notificationService.createNotification(
+              recipientUserId: memberId,
+              title: 'List Deleted',
+              message: '$ownerName deleted the list "$listName"',
+              type: 'list_deleted',
+              listId: listId,
+              senderUserId: currentUser.uid,
+            );
+          } catch (e) {
+            log('Error sending deletion notification to $memberId: $e');
+          }
+        }
+      }
+
+      // Delete the list after sending notifications
       await FirestoreService().deleteList(listId);
     } catch (e) {
       if (context.mounted) {
