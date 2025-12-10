@@ -4,8 +4,7 @@ _A real-time shared shopping experience built with Flutter & Firebase._
 
 ## 📸 Screenshots
 
-> Add your screenshots inside `/screenshots` then replace the filenames
-> below.
+
 
 ### 🔐 Authentication
 
