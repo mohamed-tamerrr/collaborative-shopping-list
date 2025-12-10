@@ -131,7 +131,7 @@ class ListItem extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+                FutureBuilder<List<Map<String, dynamic>>>(
                   future: _getMembersData(listModel.members),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -143,26 +143,11 @@ class ListItem extends StatelessWidget {
                       );
                     }
 
-                    final photoUrls = <String?>[];
-                    if (snapshot.hasData && snapshot.data != null) {
-                      for (var memberDoc in snapshot.data!) {
-                        if (memberDoc.exists) {
-                          final data = memberDoc.data();
-                          photoUrls.add(data?['photoUrl'] as String?);
-                        } else {
-                          photoUrls.add(null);
-                        }
-                      }
-                    }
+                    final membersData = snapshot.data ?? [];
+                    // Fallback if empty and list is not empty handled by passing what we have.
+                    // Actually, if fetch fails, we return empty list, so GroupAvatars shows nothing, which is cleaner than showing broken loaders.
 
-                    // If no data, create list with nulls for all members
-                    if (photoUrls.isEmpty && listModel.members.isNotEmpty) {
-                      photoUrls.addAll(
-                        List.filled(listModel.members.length, null),
-                      );
-                    }
-
-                    return GroupAvatars(imageUrls: photoUrls);
+                    return GroupAvatars(membersData: membersData);
                   },
                 ),
 
@@ -194,7 +179,7 @@ class ListItem extends StatelessWidget {
     );
   }
 
-  Future<List<DocumentSnapshot<Map<String, dynamic>>>> _getMembersData(
+  Future<List<Map<String, dynamic>>> _getMembersData(
     List<String> memberIds,
   ) async {
     if (memberIds.isEmpty) {
@@ -202,6 +187,7 @@ class ListItem extends StatelessWidget {
     }
 
     final firestore = FirebaseFirestore.instance;
+    final membersData = <Map<String, dynamic>>[];
 
     // Get all member documents
     try {
@@ -210,12 +196,23 @@ class ListItem extends StatelessWidget {
           try {
             return await firestore.collection('users').doc(memberId).get();
           } catch (e) {
-            // Return a document that doesn't exist if fetch fails
-            return firestore.collection('users').doc('dummy').get();
+            return null;
           }
         }),
       );
-      return docs;
+
+      for (var doc in docs) {
+        if (doc != null && doc.exists) {
+          final data = doc.data();
+          membersData.add({
+            'photoUrl': data?['photoUrl'] as String?,
+            'name': data?['name'] as String? ?? '',
+            'email': data?['email'] as String?,
+          });
+        }
+      }
+
+      return membersData;
     } catch (e) {
       return [];
     }

@@ -1,35 +1,30 @@
-import 'dart:io';
-
-import 'package:final_project/core/services/local_storage_service.dart';
 import 'package:final_project/core/utils/app_colors.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 
 class GroupAvatars extends StatelessWidget {
   const GroupAvatars({
     super.key,
-    required this.imageUrls,
+    required this.membersData, // List of {photoUrl, name, email}
     this.size = 35,
-    this.memberEmails,
     this.onAvatarTap,
   });
-  final List<String?> imageUrls; // Can be null for users without photos
+
+  final List<Map<String, dynamic>> membersData;
   final double size;
-  final List<String>?
-  memberEmails; // Email for each member (same order as imageUrls)
-  final void Function(String email)?
-  onAvatarTap; // Callback when avatar is tapped
+  final void Function(String email)? onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrls.isEmpty) {
+    if (membersData.isEmpty) {
       return const SizedBox.shrink();
     }
 
     const overlap = 15.0;
-    final remaining = imageUrls.length > 2 ? imageUrls.length - 2 : 0;
+    final remaining = membersData.length > 2 ? membersData.length - 2 : 0;
 
     // Calculate width based on number of avatars to show
-    final avatarsToShow = imageUrls.length > 2 ? 2 : imageUrls.length;
+    final avatarsToShow = membersData.length > 2 ? 2 : membersData.length;
     final width =
         size +
         (avatarsToShow > 1 ? (size - overlap) * (avatarsToShow - 1) : 0) +
@@ -40,43 +35,29 @@ class GroupAvatars extends StatelessWidget {
       width: width,
       child: Stack(
         children: [
-          if (imageUrls.isNotEmpty)
-            Positioned(
-              left: 0,
-              child: _buildAvatar(
-                imageUrls[0],
-                0,
-                memberEmails != null && memberEmails!.isNotEmpty
-                    ? memberEmails![0]
-                    : null,
-              ),
-            ),
+          if (membersData.isNotEmpty)
+            Positioned(left: 0, child: _buildAvatar(membersData[0], 0)),
 
-          if (imageUrls.length > 1)
+          if (membersData.length > 1)
             Positioned(
               left: size - overlap,
-              child: _buildAvatar(
-                imageUrls[1],
-                1,
-                memberEmails != null && memberEmails!.length > 1
-                    ? memberEmails![1]
-                    : null,
-              ),
+              child: _buildAvatar(membersData[1], 1),
             ),
 
           if (remaining > 0)
             Positioned(
               left: 2 * (size - overlap),
               child: GestureDetector(
-                onTap:
-                    onAvatarTap != null &&
-                        memberEmails != null &&
-                        memberEmails!.length > 2
+                onTap: onAvatarTap != null && membersData.length > 2
                     ? () {
                         // Show all remaining emails
                         _showAllMembersDialog(
                           context,
-                          memberEmails!.sublist(2),
+                          membersData
+                              .sublist(2)
+                              .map((m) => m['email'] as String? ?? '')
+                              .where((e) => e.isNotEmpty)
+                              .toList(),
                         );
                       }
                     : null,
@@ -99,8 +80,16 @@ class GroupAvatars extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(String? imageUrl, int index, String? email) {
-    final avatarWidget = _buildAvatarWidget(imageUrl);
+  Widget _buildAvatar(Map<String, dynamic> member, int index) {
+    final photoUrl = member['photoUrl'] as String?;
+    final name = member['name'] as String? ?? '';
+    final email = member['email'] as String?;
+
+    final avatarWidget = UserAvatar(
+      name: name,
+      photoUrl: photoUrl,
+      radius: size / 2,
+    );
 
     if (onAvatarTap != null && email != null) {
       return GestureDetector(
@@ -110,55 +99,6 @@ class GroupAvatars extends StatelessWidget {
     }
 
     return avatarWidget;
-  }
-
-  Widget _buildAvatarWidget(String? imageUrl) {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return CircleAvatar(
-        radius: size / 2,
-        backgroundColor: AppColors.lightGrey,
-        child: Icon(
-          Icons.person,
-          size: size / 1.5,
-          color: AppColors.mediumNavy,
-        ),
-      );
-    }
-
-    // Check if it's a local photo
-    if (imageUrl.startsWith('local:')) {
-      final uid = imageUrl.substring(6); // Remove 'local:' prefix
-      return FutureBuilder<File?>(
-        future: LocalStorageService.getProfilePhotoFile(uid),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            return CircleAvatar(
-              radius: size / 2,
-              backgroundColor: AppColors.lightGrey,
-              backgroundImage: FileImage(snapshot.data!),
-            );
-          }
-          return CircleAvatar(
-            radius: size / 2,
-            backgroundColor: AppColors.lightGrey,
-            child: Icon(
-              Icons.person,
-              size: size / 1.5,
-              color: AppColors.mediumNavy,
-            ),
-          );
-        },
-      );
-    }
-
-    // Network photo (backward compatibility)
-    return CircleAvatar(
-      radius: size / 2,
-      backgroundColor: AppColors.lightGrey,
-      backgroundImage: NetworkImage(imageUrl),
-      onBackgroundImageError: (_, __) {},
-      child: Icon(Icons.person, size: size / 1.5, color: AppColors.mediumNavy),
-    );
   }
 
   void _showAllMembersDialog(BuildContext context, List<String> emails) {

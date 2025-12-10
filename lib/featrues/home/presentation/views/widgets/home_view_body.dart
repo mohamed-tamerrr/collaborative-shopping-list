@@ -9,12 +9,22 @@ import 'package:final_project/featrues/home/presentation/views/widgets/no_list_p
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomeViewBody extends StatelessWidget {
+class HomeViewBody extends StatefulWidget {
   const HomeViewBody({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<HomeViewBody> createState() => _HomeViewBodyState();
+}
+
+class _HomeViewBodyState extends State<HomeViewBody> {
+  @override
+  void initState() {
+    super.initState();
     context.read<ListCubit>().listenToLists();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<ListCubit, ListState>(
       builder: (context, state) {
         if (state is ListLoading) {

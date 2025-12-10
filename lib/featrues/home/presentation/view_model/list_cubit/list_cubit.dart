@@ -421,6 +421,7 @@ class ListCubit extends Cubit<ListState> {
   }
 
   void listenToLists() {
+    _subscription?.cancel(); // Cancel previous subscription if any
     emit(ListLoading());
 
     final currentUser = _firebaseServices.currentUser;
@@ -429,10 +430,15 @@ class ListCubit extends Cubit<ListState> {
       return;
     }
 
-    // Listen to both lists and user's pinned lists
+    // Listen to lists where user is a member OR the owner
     final listsStream = FirebaseFirestore.instance
         .collection('lists')
-        .where('members', arrayContains: currentUser.uid)
+        .where(
+          Filter.or(
+            Filter('members', arrayContains: currentUser.uid),
+            Filter('ownerId', isEqualTo: currentUser.uid),
+          ),
+        )
         .snapshots();
 
     final userPinnedStream = FirebaseFirestore.instance
@@ -441,7 +447,10 @@ class ListCubit extends Cubit<ListState> {
         .snapshots()
         .map((snapshot) {
           final data = snapshot.data();
-          return List<String>.from(data?['pinnedLists'] ?? []);
+          if (data == null || !data.containsKey('pinnedLists')) {
+            return <String>[];
+          }
+          return List<String>.from(data['pinnedLists'] ?? []);
         });
 
     // Combine both streams using CombineLatestStream
@@ -481,10 +490,23 @@ class ListCubit extends Cubit<ListState> {
           return lists;
         }).listen((lists) {
           final int listsLength = lists.length;
+          // Always emit success even if empty, so UI can show "No lists" instead of stuck loading
           if (lists.isNotEmpty) {
             emit(ListSuccess(lists, listsLength));
           } else {
-            emit(ListInitial());
+            // If we really want to distinguish no lists from initial, we can emit success with empty list.
+            // But existing UI uses NoListPage for state != ListSuccess? No, explicit check.
+            // Original code emitted ListInitial if empty... let's stick to ListSuccess with empty list if that's better, or ListInitial.
+            // Original: if (lists.isNotEmpty) emit(ListSuccess) else emit(ListInitial).
+            // Let's keep original logic for now to minimize side effects,
+            // but 'ListInitial' might show loading or nothing depending on view.
+            if (lists.isNotEmpty) {
+              emit(ListSuccess(lists, listsLength));
+            } else {
+              emit(
+                ListSuccess([], 0),
+              ); // Changed to ListSuccess([]) to assert "Loaded but empty".
+            }
           }
         });
   }
