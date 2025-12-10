@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
@@ -16,7 +15,8 @@ class AddPeopleContainer extends StatefulWidget {
 class _AddPeopleContainerState extends State<AddPeopleContainer> {
   final FirebaseServices _firebaseServices = FirebaseServices();
   final Set<String> _selectedUserIds = {};
-  final Map<String, String> _userEmails = {}; // userId -> email mapping
+  // Store details of manually added users: {id, email}
+  final List<Map<String, String>> _addedUsers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -35,80 +35,68 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
       child: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: _firebaseServices.getAllUsers(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            child: _addedUsers.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No users added yet.\nTap "+" to add by email.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.grey),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: _addedUsers.length,
+                    itemBuilder: (context, index) {
+                      final userMap = _addedUsers[index];
+                      final userId = userMap['id']!;
+                      final email = userMap['email']!;
+                      final isSelected = _selectedUserIds.contains(userId);
 
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
+                      return AddedPersonRow(
+                        email: email,
+                        isSelected: isSelected,
+                        onTap: () {
+                          // Allow toggling selection or removing entirely
+                          // For now, let's just toggle selection as per original logic,
+                          // but since they manually added them, they probably want them selected.
+                          // If we strictly follow "add by email", maybe we should just allow deleting from list?
+                          // The original requirement says "add the users i want with email".
+                          // So let's keep the selection logic but maybe add a delete button?
+                          // The row has a 'check_circle' if selected.
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No users found'));
-                }
-
-                final users = snapshot.data!.docs
-                    .where((doc) => doc.id != currentUser.uid)
-                    .toList();
-
-                if (users.isEmpty) {
-                  return const Center(child: Text('No other users available'));
-                }
-
-                // Update email mapping
-                for (var doc in users) {
-                  final data = doc.data();
-                  _userEmails[doc.id] = data['email'] ?? '';
-                }
-
-                if (users.isEmpty) {
-                  return const Center(child: Text('No users to share with'));
-                }
-
-                return ListView.builder(
-                  padding: EdgeInsets.zero,
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final userDoc = users[index];
-                    final userId = userDoc.id;
-                    final userData = userDoc.data();
-                    final email = userData['email'] ?? '';
-                    final isSelected = _selectedUserIds.contains(userId);
-
-                    return AddedPersonRow(
-                      email: email,
-                      isSelected: isSelected,
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
+                          setState(() {
+                            if (isSelected) {
+                              _selectedUserIds.remove(userId);
+                            } else {
+                              _selectedUserIds.add(userId);
+                            }
+                          });
+                          widget.onSelectionChanged?.call(_selectedUserIds);
+                        },
+                        onRemove: () {
+                          setState(() {
                             _selectedUserIds.remove(userId);
-                          } else {
-                            _selectedUserIds.add(userId);
-                          }
-                        });
-                        widget.onSelectionChanged?.call(_selectedUserIds);
-                      },
-                    );
-                  },
-                );
-              },
-            ),
+                            _addedUsers.removeAt(index);
+                          });
+                          widget.onSelectionChanged?.call(_selectedUserIds);
+                        },
+                      );
+                    },
+                  ),
           ),
           SizedBox(
             height: 50,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                IconButton(
-                  padding: const EdgeInsets.only(right: 4),
+                TextButton.icon(
                   onPressed: () {
                     _showAddEmailDialog(context);
                   },
                   icon: const Icon(Icons.add),
+                  label: const Text("Add User"),
                 ),
+                const SizedBox(width: 8),
               ],
             ),
           ),
@@ -147,12 +135,31 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
                 return;
               }
 
+              // Check if already added
+              final alreadyAdded = _addedUsers.any((u) => u['email'] == email);
+              if (alreadyAdded) {
+                ShowSnackBar.failureSnackBar(
+                  context: context,
+                  content: 'User already added to the list',
+                );
+                return;
+              }
+
+              final currentUser = _firebaseServices.currentUser;
+              if (currentUser != null && currentUser.email == email) {
+                ShowSnackBar.failureSnackBar(
+                  context: context,
+                  content: 'You cannot add yourself',
+                );
+                return;
+              }
+
               final userDoc = await _firebaseServices.getUserByEmail(email);
               if (userDoc != null && userDoc.exists) {
                 final userId = userDoc.id;
                 setState(() {
+                  _addedUsers.add({'id': userId, 'email': email});
                   _selectedUserIds.add(userId);
-                  _userEmails[userId] = email;
                 });
                 widget.onSelectionChanged?.call(_selectedUserIds);
                 if (context.mounted) {
@@ -185,10 +192,12 @@ class AddedPersonRow extends StatelessWidget {
     required this.email,
     this.isSelected = false,
     this.onTap,
+    this.onRemove,
   });
   final String email;
   final bool isSelected;
   final VoidCallback? onTap;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +219,6 @@ class AddedPersonRow extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                // to make max length for email is 26 letter
                 email.length > 26 ? email.substring(0, 26) : email,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -221,12 +229,11 @@ class AddedPersonRow extends StatelessWidget {
                 ),
               ),
             ),
-            if (isSelected)
-              IconButton(
-                icon: const Icon(Icons.remove_circle_outline),
-                color: AppColors.grey,
-                onPressed: onTap,
-              ),
+            IconButton(
+              icon: const Icon(Icons.close, size: 20),
+              color: AppColors.grey,
+              onPressed: onRemove,
+            ),
           ],
         ),
       ),

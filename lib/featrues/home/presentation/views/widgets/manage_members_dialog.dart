@@ -27,13 +27,45 @@ class ManageMembersDialog extends StatefulWidget {
 class _ManageMembersDialogState extends State<ManageMembersDialog> {
   final FirebaseServices _firebaseServices = FirebaseServices();
   Set<String> _selectedUserIds = {};
-  List<String> _lastMembers = [];
+  // Store displayed user info: {uid, email}
+  List<Map<String, dynamic>> _displayedUsers = [];
   bool _initialized = false;
   bool _isSaving = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize selected IDs with current members (excluding owner)
+    _selectedUserIds = widget.currentMembers
+        .where((id) => id != widget.ownerId)
+        .toSet();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchMemberDetails() async {
+    if (_initialized) return _displayedUsers;
+
+    List<Map<String, dynamic>> loadedUsers = [];
+
+    for (String userId in _selectedUserIds) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (userDoc.exists) {
+        loadedUsers.add({
+          'uid': userId,
+          'email': userDoc.data()?['email'] ?? 'Unknown',
+        });
+      }
+    }
+
+    _displayedUsers = loadedUsers;
+    _initialized = true;
+    return _displayedUsers;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final currentUser = _firebaseServices.currentUser;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -57,123 +89,60 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
       content: Container(
         width: screenWidth * 0.9 > 500 ? 500 : screenWidth * 0.9,
         constraints: BoxConstraints(maxHeight: screenHeight * 0.55),
-        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          stream: FirebaseFirestore.instance
-              .collection('lists')
-              .doc(widget.listId)
-              .snapshots(),
-          builder: (context, listSnapshot) {
-            if (listSnapshot.connectionState == ConnectionState.waiting) {
+        child: FutureBuilder<List<Map<String, dynamic>>>(
+          future: _fetchMemberDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (!listSnapshot.hasData || !listSnapshot.data!.exists) {
-              return const Center(child: Text('List not found'));
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error loading members: ${snapshot.error}'),
+              );
             }
 
-            final members =
-                List<String>.from(listSnapshot.data!.data()?['members'] ?? []);
-            _syncSelectionWithMembers(members, currentUser?.uid);
-
+            // Let's rely on _displayedUsers list which we update.
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        tooltip: 'Add user by email',
+                      TextButton.icon(
                         onPressed: _showAddEmailDialog,
+                        icon: const Icon(Icons.add),
+                        label: const Text("Add User"),
                       ),
                     ],
                   ),
                 ),
                 Flexible(
-                  child: currentUser == null
-                      ? const Padding(
-                          padding: EdgeInsets.all(24.0),
-                          child: Center(child: Text('Please sign in to manage members')),
-                        )
-                      : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                          stream: _firebaseServices.getAllUsers(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
-                            }
+                  child: _displayedUsers.isEmpty
+                      ? const Center(child: Text("No members in this list."))
+                      : ListView.builder(
+                          itemCount: _displayedUsers.length,
+                          itemBuilder: (context, index) {
+                            final user = _displayedUsers[index];
+                            final userId = user['uid'] as String;
+                            final email = user['email'] as String;
 
-                            if (snapshot.hasError) {
-                              return Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Text('Error: ${snapshot.error}'),
-                                ),
-                              );
-                            }
-
-                            if (!snapshot.hasData ||
-                                snapshot.data!.docs.isEmpty) {
-                              return const Center(child: Text('No users found'));
-                            }
-
-                            final users = snapshot.data!.docs
-                                .where((doc) => doc.id != widget.ownerId)
-                                .toList();
-
-                            if (users.isEmpty) {
-                              return const Center(
-                                child: Text('No other users available'),
-                              );
-                            }
-
-                            return ListView.builder(
-                              itemCount: users.length,
-                              itemBuilder: (context, index) {
-                                final userDoc = users[index];
-                                final userId = userDoc.id;
-                                final data = userDoc.data();
-                                final email = data['email'] ?? '';
-                                final isCurrentMember = members.contains(userId);
-                                final isSelected = _selectedUserIds.contains(userId);
-
-                                return ListTile(
-                                  title: Text(email),
-                                  subtitle: isCurrentMember
-                                      ? const Text(
-                                          'Current member',
-                                          style: TextStyle(
-                                            color: AppColors.orange,
-                                            fontSize: 12,
-                                          ),
-                                        )
-                                      : null,
-                                  trailing: Checkbox(
-                                    value: isSelected,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        if (value == true) {
-                                          _selectedUserIds.add(userId);
-                                        } else {
-                                          _selectedUserIds.remove(userId);
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      if (isSelected) {
-                                        _selectedUserIds.remove(userId);
-                                      } else {
-                                        _selectedUserIds.add(userId);
-                                      }
-                                    });
-                                  },
-                                );
-                              },
+                            return ListTile(
+                              title: Text(email),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedUserIds.remove(userId);
+                                    _displayedUsers.removeAt(index);
+                                  });
+                                },
+                              ),
                             );
                           },
                         ),
@@ -203,21 +172,6 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
     );
   }
 
-  void _syncSelectionWithMembers(List<String> members, String? currentUserId) {
-    final currentSet = Set<String>.from(members);
-    final lastSet = Set<String>.from(_lastMembers);
-    final changed =
-        currentSet.length != lastSet.length || currentSet.difference(lastSet).isNotEmpty;
-
-    if (!_initialized || changed) {
-      _lastMembers = members;
-      _selectedUserIds = members
-          .where((id) => id != widget.ownerId && id != currentUserId)
-          .toSet();
-      _initialized = true;
-    }
-  }
-
   Future<void> _handleSave() async {
     setState(() => _isSaving = true);
     try {
@@ -230,11 +184,11 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
           .get();
       final members = List<String>.from(listDoc.data()?['members'] ?? []);
 
-      final toAdd =
-          _selectedUserIds.where((id) => !members.contains(id)).toList();
+      final toAdd = _selectedUserIds
+          .where((id) => !members.contains(id))
+          .toList();
       final toRemove = members
-          .where((id) =>
-              id != widget.ownerId && !_selectedUserIds.contains(id))
+          .where((id) => id != widget.ownerId && !_selectedUserIds.contains(id))
           .toList();
 
       for (final userId in toAdd) {
@@ -335,6 +289,7 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
 
                 setState(() {
                   _selectedUserIds.add(userId);
+                  _displayedUsers.add({'uid': userId, 'email': email});
                 });
                 if (context.mounted) {
                   Navigator.pop(context);
@@ -359,5 +314,3 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
     );
   }
 }
-
-

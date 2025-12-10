@@ -26,7 +26,10 @@ class ListCubit extends Cubit<ListState> {
   final TextEditingController listTagController = TextEditingController();
   final TextEditingController listNoteController = TextEditingController();
 
-  final listKey = GlobalKey<FormState>(); // check the validity of the form before creating a list
+  final listKey =
+      GlobalKey<
+        FormState
+      >(); // check the validity of the form before creating a list
 
   // Done
   Future<String?> createList(
@@ -104,7 +107,6 @@ class ListCubit extends Cubit<ListState> {
   //  Done
   Future<void> deleteList(String listId, BuildContext context) async {
     try {
-      emit(ListLoading());
       final currentUser = _firebaseServices.currentUser;
       if (currentUser == null) {
         if (context.mounted) {
@@ -133,7 +135,6 @@ class ListCubit extends Cubit<ListState> {
       }
 
       final listData = listDoc.data();
-      final members = List<String>.from(listData?['members'] ?? []);
       final ownerId = listData?['ownerId'] ?? '';
 
       // Only owner can delete the list
@@ -147,6 +148,7 @@ class ListCubit extends Cubit<ListState> {
         return;
       }
 
+      emit(ListLoading());
       await FirestoreService().deleteList(listId);
     } catch (e) {
       if (context.mounted) {

@@ -11,6 +11,7 @@ import 'package:final_project/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'featrues/auth/presentation/views/forgot_password_screen.dart';
 import 'featrues/auth/presentation/views/reset_password_screen.dart';
 import 'featrues/splash/presentation/views/splash_view.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'ListMate',
         theme: ThemeData(
+          dialogTheme: DialogThemeData(backgroundColor: AppColors.white),
           scaffoldBackgroundColor: AppColors.white,
           colorScheme: ColorScheme.fromSeed(
             seedColor: AppColors.navyBlue,
