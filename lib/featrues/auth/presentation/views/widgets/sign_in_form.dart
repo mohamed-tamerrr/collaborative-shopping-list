@@ -3,11 +3,12 @@ import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_validation.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'sign_in_button.dart';
-import 'forgot_password_button.dart';
 import 'footer_sign_up.dart';
+import 'forgot_password_button.dart';
+import 'sign_in_button.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -52,7 +53,11 @@ class _SignInFormState extends State<SignInForm> {
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       if (!mounted) return;
-      ShowSnackBar.failureSnackBar(context: context, content: e.toString());
+      String errorMessage = e.toString();
+      if (e is FirebaseAuthException) {
+        errorMessage = FirebaseServices.getAuthErrorMessage(e.code);
+      }
+      ShowSnackBar.failureSnackBar(context: context, content: errorMessage);
     }
 
     if (mounted) setState(() => _loading = false);

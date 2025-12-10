@@ -153,4 +153,28 @@ class FirebaseServices {
   ) async {
     return await _firestore.collection('users').doc(uid).get();
   }
+
+  static String getAuthErrorMessage(String errorCode) {
+    switch (errorCode) {
+      case 'invalid-email':
+        return 'The email address is not valid.';
+      case 'user-disabled':
+        return 'This user has been disabled.';
+      case 'user-not-found':
+        return 'No user found with this email.';
+      case 'wrong-password':
+        return 'Wrong password provided.';
+      case 'invalid-credential':
+      case 'INVALID_LOGIN_CREDENTIALS':
+        return 'Invalid email or password.';
+      case 'email-already-in-use':
+        return 'The account already exists for that email.';
+      case 'weak-password':
+        return 'The password provided is too weak.';
+      case 'network-request-failed':
+        return 'Network error. Please check your connection.';
+      default:
+        return 'An error occurred ($errorCode). Please try again.';
+    }
+  }
 }

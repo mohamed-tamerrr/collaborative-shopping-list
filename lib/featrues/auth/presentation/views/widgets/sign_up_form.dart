@@ -3,10 +3,11 @@ import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_validation.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/auth/presentation/views/widgets/custom_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'sign_up_button.dart';
 import 'footer_sign_in.dart';
+import 'sign_up_button.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -58,10 +59,12 @@ class _SignUpFormState extends State<SignUpForm> {
     } catch (e) {
       if (!mounted) return;
 
-      ShowSnackBar.failureSnackBar(
-        context: context,
-        content: e.toString(),
-      );
+      String errorMessage = e.toString();
+      if (e is FirebaseAuthException) {
+        errorMessage = FirebaseServices.getAuthErrorMessage(e.code);
+      }
+
+      ShowSnackBar.failureSnackBar(context: context, content: errorMessage);
     }
 
     if (mounted) {
@@ -79,10 +82,7 @@ class _SignUpFormState extends State<SignUpForm> {
             controller: _nameController,
             labelText: 'Full Name',
             validator: AppValidation.validateName,
-            preFixIcon: const Icon(
-              Icons.person,
-              color: AppColors.mediumNavy,
-            ),
+            preFixIcon: const Icon(Icons.person, color: AppColors.mediumNavy),
           ),
           const SizedBox(height: 20),
 
@@ -90,10 +90,7 @@ class _SignUpFormState extends State<SignUpForm> {
             controller: emailController,
             labelText: 'Email',
             validator: AppValidation.validateEmail,
-            preFixIcon: const Icon(
-              Icons.email,
-              color: AppColors.mediumNavy,
-            ),
+            preFixIcon: const Icon(Icons.email, color: AppColors.mediumNavy),
           ),
           const SizedBox(height: 20),
 
@@ -102,10 +99,7 @@ class _SignUpFormState extends State<SignUpForm> {
             labelText: 'Password',
             isPassword: true,
             validator: AppValidation.validatePassword,
-            preFixIcon: const Icon(
-              Icons.lock,
-              color: AppColors.mediumNavy,
-            ),
+            preFixIcon: const Icon(Icons.lock, color: AppColors.mediumNavy),
           ),
           const SizedBox(height: 20),
 
@@ -113,11 +107,10 @@ class _SignUpFormState extends State<SignUpForm> {
             controller: confirmPasswordController,
             labelText: 'Confirm Password',
             isPassword: true,
-            validator: (value) =>
-                AppValidation.validateConfirmPassword(
-                  value,
-                  passwordController.text,
-                ),
+            validator: (value) => AppValidation.validateConfirmPassword(
+              value,
+              passwordController.text,
+            ),
             preFixIcon: const Icon(
               Icons.lock_outline,
               color: AppColors.mediumNavy,
