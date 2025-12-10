@@ -65,10 +65,11 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                   return const SizedBox.shrink();
                 }
 
-                final members =
-                    List<String>.from(listSnapshot.data!.data()?['members'] ?? []);
+                final members = List<String>.from(
+                  listSnapshot.data!.data()?['members'] ?? [],
+                );
 
-                return FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+                return FutureBuilder<List<Map<String, dynamic>>>(
                   future: _getMembersData(members),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -85,30 +86,11 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                       );
                     }
 
-                    final photoUrls = <String?>[];
-                    final emails = <String>[];
-
-                    if (snapshot.hasData && snapshot.data != null) {
-                      for (var memberDoc in snapshot.data!) {
-                        if (memberDoc.exists) {
-                          final data = memberDoc.data();
-                          photoUrls.add(data?['photoUrl'] as String?);
-                          emails.add(data?['email'] ?? 'Unknown');
-                        } else {
-                          photoUrls.add(null);
-                          emails.add('Unknown');
-                        }
-                      }
-                    }
-
-                    if (photoUrls.isEmpty && members.isNotEmpty) {
-                      photoUrls.addAll(List.filled(members.length, null));
-                      emails.addAll(List.filled(members.length, 'Unknown'));
-                    }
+                    final membersData = snapshot.data ?? [];
+                    // Fallback handled by receiving widget
 
                     return GroupAvatars(
-                      imageUrls: photoUrls,
-                      memberEmails: emails,
+                      membersData: membersData,
                       onAvatarTap: (email) {
                         showDialog(
                           context: context,
@@ -137,7 +119,7 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
     );
   }
 
-  Future<List<DocumentSnapshot<Map<String, dynamic>>>> _getMembersData(
+  Future<List<Map<String, dynamic>>> _getMembersData(
     List<String> memberIds,
   ) async {
     if (memberIds.isEmpty) {
@@ -145,6 +127,7 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
     }
 
     final firestore = FirebaseFirestore.instance;
+    final membersData = <Map<String, dynamic>>[];
 
     // Get all member documents
     try {
@@ -153,12 +136,22 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
           try {
             return await firestore.collection('users').doc(memberId).get();
           } catch (e) {
-            // Return a document that doesn't exist if fetch fails
-            return firestore.collection('users').doc('dummy').get();
+            return null;
           }
         }),
       );
-      return docs;
+
+      for (var doc in docs) {
+        if (doc != null && doc.exists) {
+          final data = doc.data();
+          membersData.add({
+            'photoUrl': data?['photoUrl'] as String?,
+            'name': data?['name'] as String? ?? '',
+            'email': data?['email'] as String?,
+          });
+        }
+      }
+      return membersData;
     } catch (e) {
       return [];
     }

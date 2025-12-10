@@ -1,6 +1,7 @@
 import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 
 class AddPeopleContainer extends StatefulWidget {
@@ -50,10 +51,14 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
                       final userMap = _addedUsers[index];
                       final userId = userMap['id']!;
                       final email = userMap['email']!;
+                      final name = userMap['name'] ?? 'Unknown';
+                      final photoUrl = userMap['photoUrl'];
                       final isSelected = _selectedUserIds.contains(userId);
 
                       return AddedPersonRow(
                         email: email,
+                        name: name,
+                        photoUrl: photoUrl,
                         isSelected: isSelected,
                         onTap: () {
                           // Allow toggling selection or removing entirely
@@ -157,8 +162,14 @@ class _AddPeopleContainerState extends State<AddPeopleContainer> {
               final userDoc = await _firebaseServices.getUserByEmail(email);
               if (userDoc != null && userDoc.exists) {
                 final userId = userDoc.id;
+                final userData = userDoc.data()!;
                 setState(() {
-                  _addedUsers.add({'id': userId, 'email': email});
+                  _addedUsers.add({
+                    'id': userId,
+                    'email': email,
+                    'name': userData['name'] ?? 'Unknown',
+                    'photoUrl': userData['photoUrl'] ?? '',
+                  });
                   _selectedUserIds.add(userId);
                 });
                 widget.onSelectionChanged?.call(_selectedUserIds);
@@ -190,11 +201,15 @@ class AddedPersonRow extends StatelessWidget {
   const AddedPersonRow({
     super.key,
     required this.email,
+    this.name,
+    this.photoUrl,
     this.isSelected = false,
     this.onTap,
     this.onRemove,
   });
   final String email;
+  final String? name;
+  final String? photoUrl;
   final bool isSelected;
   final VoidCallback? onTap;
   final VoidCallback? onRemove;
@@ -208,27 +223,44 @@ class AddedPersonRow extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            if (isSelected)
-              const Icon(Icons.check_circle, color: AppColors.orange, size: 20)
-            else
-              const Icon(
-                Icons.radio_button_unchecked,
-                color: AppColors.grey,
-                size: 20,
-              ),
-            const SizedBox(width: 8),
+            UserAvatar(name: name ?? '', photoUrl: photoUrl, radius: 20),
+            const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                email.length > 26 ? email.substring(0, 26) : email,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: isSelected ? AppColors.orange : AppColors.navyBlue,
-                  fontSize: 16,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name ?? 'Unknown',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isSelected ? AppColors.orange : AppColors.navyBlue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    email.length > 26 ? email.substring(0, 26) : email,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.grey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
               ),
             ),
+            if (isSelected)
+              const Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Icon(
+                  Icons.check_circle,
+                  color: AppColors.orange,
+                  size: 20,
+                ),
+              ),
             IconButton(
               icon: const Icon(Icons.close, size: 20),
               color: AppColors.grey,

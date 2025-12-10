@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_styles.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
+import 'package:flutter/material.dart';
 
 import 'widgets/profile_avatar.dart';
 import 'widgets/profile_info_section.dart';
@@ -29,19 +29,10 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() => _isUploading = true);
 
     try {
-      await _firebaseServices.uploadProfilePhoto(
-        uid: user.uid,
-        file: file,
-      );
-      ShowSnackBar.successSnackBar(
-        context: context,
-        content: 'Photo updated',
-      );
+      await _firebaseServices.uploadProfilePhoto(uid: user.uid, file: file);
+      ShowSnackBar.successSnackBar(context: context, content: 'Photo updated');
     } catch (e) {
-      ShowSnackBar.failureSnackBar(
-        context: context,
-        content: 'Failed: $e',
-      );
+      ShowSnackBar.failureSnackBar(context: context, content: 'Failed: $e');
     } finally {
       setState(() => _isUploading = false);
     }
@@ -49,11 +40,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   void _signOut() {
     _firebaseServices.signOut();
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      '/login',
-      (_) => false,
-    );
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
   }
 
   @override
@@ -80,6 +67,7 @@ class _ProfileViewState extends State<ProfileView> {
               children: [
                 const SizedBox(height: 20),
                 ProfileAvatar(
+                  name: name,
                   photoUrl: photoUrl,
                   isUploading: _isUploading,
                   onPickImage: _pickAndUpload,

@@ -194,17 +194,14 @@
 //     );
 //   }
 // }
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/core/services/firebase_services.dart';
-import 'package:final_project/core/services/local_storage_service.dart';
 import 'package:final_project/core/services/notification_service.dart';
 import 'package:final_project/core/utils/app_colors.dart';
-import 'package:final_project/core/utils/app_images.dart';
 import 'package:final_project/featrues/home/presentation/views/notifications_view.dart';
 import 'package:final_project/featrues/home/presentation/views/profile_view.dart';
 import 'package:final_project/featrues/home/presentation/views/widgets/app_bar_icon.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget {
@@ -238,62 +235,7 @@ class CustomAppBar extends StatelessWidget {
                     MaterialPageRoute(builder: (_) => const ProfileView()),
                   );
                 },
-                child: FutureBuilder<File?>(
-                  future: photoUrl != null && photoUrl.startsWith('local:')
-                      ? LocalStorageService.getProfilePhotoFile(photoUrl.substring(6))
-                      : Future.value(null),
-                  builder: (context, snapshot) {
-                    if (photoUrl != null && photoUrl.startsWith('local:')) {
-                      if (snapshot.hasData && snapshot.data != null) {
-                        return CircleAvatar(
-                          radius: 20,
-                          backgroundColor: AppColors.lightGrey,
-                          backgroundImage: FileImage(snapshot.data!),
-                        );
-                      }
-                      return CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.lightGrey,
-                        child: ClipOval(
-                          child: Image.asset(
-                            AppImages.avatar,
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    } else if (photoUrl != null && photoUrl.isNotEmpty) {
-                      return CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.lightGrey,
-                        backgroundImage: NetworkImage(photoUrl),
-                        onBackgroundImageError: (_, __) {},
-                        child: ClipOval(
-                          child: Image.asset(
-                            AppImages.avatar,
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.lightGrey,
-                        child: ClipOval(
-                          child: Image.asset(
-                            AppImages.avatar,
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
+                child: UserAvatar(name: name, photoUrl: photoUrl, radius: 20),
               ),
 
               const SizedBox(width: 10),
@@ -312,10 +254,7 @@ class CustomAppBar extends StatelessWidget {
                   ),
                   Text(
                     email,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: AppColors.grey),
                   ),
                 ],
               ),
@@ -356,15 +295,14 @@ class CustomAppBar extends StatelessWidget {
                           right: -2,
                           top: -2,
                           child: StreamBuilder<int>(
-                            stream: _notificationService.getUnreadCount(user.uid),
+                            stream: _notificationService.getUnreadCount(
+                              user.uid,
+                            ),
                             builder: (context, snapshot) {
                               final count = snapshot.data ?? 0;
 
                               if (count == 0) {
-                                return const SizedBox(
-                                  width: 1,
-                                  height: 1,
-                                );
+                                return const SizedBox(width: 1, height: 1);
                               }
 
                               return Container(
@@ -384,7 +322,7 @@ class CustomAppBar extends StatelessWidget {
                               );
                             },
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
