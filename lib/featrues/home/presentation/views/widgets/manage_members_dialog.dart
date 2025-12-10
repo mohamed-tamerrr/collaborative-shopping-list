@@ -192,19 +192,23 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
           .toList();
 
       for (final userId in toAdd) {
-        await listCubit.inviteUser(
-          listId: widget.listId,
-          userId: userId,
-          context: context,
-        );
+        if (mounted) {
+          await listCubit.inviteUser(
+            listId: widget.listId,
+            userId: userId,
+            context: context,
+          );
+        }
       }
 
       for (final userId in toRemove) {
-        await listCubit.removeUser(
-          listId: widget.listId,
-          userId: userId,
-          context: context,
-        );
+        if (mounted) {
+          await listCubit.removeUser(
+            listId: widget.listId,
+            userId: userId,
+            context: context,
+          );
+        }
       }
 
       if (mounted) {
@@ -261,6 +265,7 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
               }
 
               final userDoc = await _firebaseServices.getUserByEmail(email);
+              if (!context.mounted) return;
               if (userDoc != null && userDoc.exists) {
                 final userId = userDoc.id;
                 final currentUser = _firebaseServices.currentUser;
@@ -314,4 +319,3 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
     );
   }
 }
-

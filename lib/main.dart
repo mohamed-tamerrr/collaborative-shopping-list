@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:final_project/core/services/local_storage_service.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/app_styles.dart';
@@ -18,15 +20,11 @@ import 'featrues/splash/presentation/views/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // TEMPORARY: Reset onboarding to test (REMOVE THIS AFTER TESTING)
   await LocalStorageService.resetOnboarding();
-  print(
-    'Onboarding reset - you should see it after splash screen',
-  );
+  log('Onboarding reset - you should see it after splash screen');
 
   runApp(const MyApp());
 }
@@ -41,9 +39,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'ListMate',
         theme: ThemeData(
-          dialogTheme: DialogThemeData(
-            backgroundColor: AppColors.white,
-          ),
+          dialogTheme: DialogThemeData(backgroundColor: AppColors.white),
           scaffoldBackgroundColor: AppColors.white,
           colorScheme: ColorScheme.fromSeed(
             seedColor: AppColors.navyBlue,
@@ -63,9 +59,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.white,
             elevation: 0,
-            iconTheme: IconThemeData(
-              color: AppColors.mediumNavy,
-            ),
+            iconTheme: IconThemeData(color: AppColors.mediumNavy),
             titleTextStyle: TextStyle(
               color: AppColors.mediumNavy,
               fontSize: 20,
@@ -78,10 +72,8 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const SignInScreen(),
           '/signup': (context) => const SignUpScreen(),
           '/profile': (context) => const ProfileView(),
-          '/forgot-password': (context) =>
-              const ForgotPasswordScreen(),
-          '/reset-password': (context) =>
-              const ResetPasswordScreen(),
+          '/forgot-password': (context) => const ForgotPasswordScreen(),
+          '/reset-password': (context) => const ResetPasswordScreen(),
           '/onboarding': (context) => const OnboardingView(),
         },
 

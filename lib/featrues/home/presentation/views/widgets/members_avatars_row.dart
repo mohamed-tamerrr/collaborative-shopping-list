@@ -22,7 +22,7 @@ class MembersAvatarsRow extends StatelessWidget {
       if (!doc.exists) {
         return MemberInfo(uid: doc.id, email: 'Unknown', photoUrl: null);
       }
-      final data = doc.data() as Map<String, dynamic>? ?? {};
+      final data = doc.data() ?? {};
       return MemberInfo(
         uid: doc.id,
         email: data['email'] ?? 'Unknown',

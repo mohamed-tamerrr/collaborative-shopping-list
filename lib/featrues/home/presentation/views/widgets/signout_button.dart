@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:final_project/core/utils/app_styles.dart';
+import 'package:flutter/material.dart';
 
 class SignOutButton extends StatelessWidget {
   final VoidCallback onSignOut;
@@ -15,9 +15,7 @@ class SignOutButton extends StatelessWidget {
         icon: const Icon(Icons.logout),
         label: const Text('Sign Out'),
         style: AppStyles.primaryButtonStyle.copyWith(
-          minimumSize: MaterialStatePropertyAll(
-            const Size(double.infinity, 56),
-          ),
+          minimumSize: WidgetStatePropertyAll(const Size(double.infinity, 56)),
         ),
       ),
     );

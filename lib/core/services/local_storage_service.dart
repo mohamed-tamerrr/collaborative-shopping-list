@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 class LocalStorageService {
   static const String _profilePhotosDir = 'profile_photos';
@@ -120,16 +122,16 @@ class LocalStorageService {
     try {
       final appDir = await getApplicationDocumentsDirectory();
       final file = File(path.join(appDir.path, '$_onboardingKey.txt'));
-      print('Checking onboarding file at: ${file.path}');
+      log('Checking onboarding file at: ${file.path}');
       if (await file.exists()) {
         final content = await file.readAsString();
-        print('Onboarding file content: $content');
+        log('Onboarding file content: $content');
         return content.trim() == 'true';
       }
-      print('Onboarding file does not exist - returning false');
+      log('Onboarding file does not exist - returning false');
       return false;
     } catch (e) {
-      print('Error checking onboarding: $e');
+      log('Error checking onboarding: $e');
       return false;
     }
   }
@@ -139,15 +141,15 @@ class LocalStorageService {
     try {
       final appDir = await getApplicationDocumentsDirectory();
       final file = File(path.join(appDir.path, '$_onboardingKey.txt'));
-      print('Resetting onboarding file at: ${file.path}');
+      log('Resetting onboarding file at: ${file.path}');
       if (await file.exists()) {
         await file.delete();
-        print('Onboarding file deleted successfully');
+        log('Onboarding file deleted successfully');
       } else {
-        print('Onboarding file does not exist - nothing to delete');
+        log('Onboarding file does not exist - nothing to delete');
       }
     } catch (e) {
-      print('Error resetting onboarding: $e');
+      log('Error resetting onboarding: $e');
     }
   }
 }

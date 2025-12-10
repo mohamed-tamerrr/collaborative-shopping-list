@@ -74,7 +74,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenHeight < 700;
-    final isVerySmallScreen = screenHeight < 600;
+    // final isVerySmallScreen = screenHeight < 600;
 
     return Scaffold(
       backgroundColor: AppColors.navyBlue,
@@ -104,9 +104,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                         child: Text(
                           'Skip',
                           style: TextStyle(
-                            color: AppColors.white.withValues(
-                              alpha: 0.7,
-                            ),
+                            color: AppColors.white.withValues(alpha: 0.7),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             decoration: TextDecoration.underline,
@@ -142,19 +140,15 @@ class _OnboardingViewState extends State<OnboardingView> {
                       children: [
                         // Page indicators
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
                             _pages.length,
-                            (index) => _buildPageIndicator(
-                              index == _currentPage,
-                            ),
+                            (index) =>
+                                _buildPageIndicator(index == _currentPage),
                           ),
                         ),
 
-                        SizedBox(
-                          height: isSmallScreen ? 16.0 : 24.0,
-                        ),
+                        SizedBox(height: isSmallScreen ? 16.0 : 24.0),
 
                         // Get Started button with gradient (matching splash)
                         _buildGradientButton(),
@@ -216,9 +210,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _currentPage == _pages.length - 1
-                  ? 'Get Started'
-                  : 'Next',
+              _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
               style: const TextStyle(
                 color: AppColors.white,
                 fontSize: 18,

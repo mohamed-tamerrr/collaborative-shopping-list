@@ -1,6 +1,5 @@
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/featrues/onboarding/data/models/onboarding_page_data.dart';
-import 'package:final_project/featrues/onboarding/presentation/views/onboarding_view.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -37,19 +36,15 @@ class _OnboardingPageState extends State<OnboardingPage>
       vsync: this,
     );
 
-    _iconScale = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.elasticOut,
-      ),
-    );
+    _iconScale = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
-    _iconFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _iconFade = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _textFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -58,18 +53,11 @@ class _OnboardingPageState extends State<OnboardingPage>
       ),
     );
 
-    _textSlide =
-        Tween<Offset>(
-          begin: const Offset(0, 0.3),
-          end: Offset.zero,
-        ).animate(
+    _textSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(
           CurvedAnimation(
             parent: _controller,
-            curve: const Interval(
-              0.4,
-              1.0,
-              curve: Curves.easeOut,
-            ),
+            curve: const Interval(0.4, 1.0, curve: Curves.easeOut),
           ),
         );
 
@@ -117,9 +105,7 @@ class _OnboardingPageState extends State<OnboardingPage>
         : isSmallScreen
         ? 32.0
         : 48.0;
-    final spacingBetweenTitleAndDescription = isVerySmallScreen
-        ? 12.0
-        : 16.0;
+    final spacingBetweenTitleAndDescription = isVerySmallScreen ? 12.0 : 16.0;
 
     return SingleChildScrollView(
       child: ConstrainedBox(
@@ -131,9 +117,7 @@ class _OnboardingPageState extends State<OnboardingPage>
               200,
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -156,9 +140,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                   width: iconSize,
                   height: iconSize,
                   decoration: BoxDecoration(
-                    color: AppColors.white.withValues(
-                      alpha: 0.15,
-                    ),
+                    color: AppColors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -177,10 +159,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                 builder: (context, child) {
                   return Opacity(
                     opacity: _textFade.value,
-                    child: SlideTransition(
-                      position: _textSlide,
-                      child: child,
-                    ),
+                    child: SlideTransition(position: _textSlide, child: child),
                   );
                 },
                 child: Text(
@@ -198,9 +177,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                 ),
               ),
 
-              SizedBox(
-                height: spacingBetweenTitleAndDescription,
-              ),
+              SizedBox(height: spacingBetweenTitleAndDescription),
 
               // Animated Description
               AnimatedBuilder(
@@ -208,23 +185,16 @@ class _OnboardingPageState extends State<OnboardingPage>
                 builder: (context, child) {
                   return Opacity(
                     opacity: _textFade.value,
-                    child: SlideTransition(
-                      position: _textSlide,
-                      child: child,
-                    ),
+                    child: SlideTransition(position: _textSlide, child: child),
                   );
                 },
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.02,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                   child: Text(
                     widget.data.description,
                     style: TextStyle(
                       fontSize: descriptionFontSize,
-                      color: AppColors.white.withValues(
-                        alpha: 0.8,
-                      ),
+                      color: AppColors.white.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w300,
                       letterSpacing: 0.5,
                       height: 1.5,

@@ -30,9 +30,16 @@ class _ProfileViewState extends State<ProfileView> {
 
     try {
       await _firebaseServices.uploadProfilePhoto(uid: user.uid, file: file);
-      ShowSnackBar.successSnackBar(context: context, content: 'Photo updated');
+      if (mounted) {
+        ShowSnackBar.successSnackBar(
+          context: context,
+          content: 'Photo updated',
+        );
+      }
     } catch (e) {
-      ShowSnackBar.failureSnackBar(context: context, content: 'Failed: $e');
+      if (mounted) {
+        ShowSnackBar.failureSnackBar(context: context, content: 'Failed: $e');
+      }
     } finally {
       setState(() => _isUploading = false);
     }

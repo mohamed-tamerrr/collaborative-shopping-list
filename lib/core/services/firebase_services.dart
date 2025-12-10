@@ -1,18 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:final_project/core/services/local_storage_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 
 class FirebaseServices {
   FirebaseServices();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore =
-      FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -36,23 +33,19 @@ class FirebaseServices {
     required String email,
     required String password,
   }) async {
-    final credential = await _auth
-        .createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
     await credential.user?.updateDisplayName(name);
 
-    await _firestore
-        .collection('users')
-        .doc(credential.user!.uid)
-        .set({
-          'name': name,
-          'email': email,
-          'photoUrl': credential.user?.photoURL,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+    await _firestore.collection('users').doc(credential.user!.uid).set({
+      'name': name,
+      'email': email,
+      'photoUrl': credential.user?.photoURL,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
 
     return credential;
   }
@@ -61,16 +54,12 @@ class FirebaseServices {
     required String email,
     required String password,
   }) {
-    return _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    return _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> signOut() => _auth.signOut();
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>>
-  userProfileStream(String uid) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> userProfileStream(String uid) {
     return _firestore.collection('users').doc(uid).snapshots();
   }
 
@@ -78,9 +67,7 @@ class FirebaseServices {
     required String uid,
     required String name,
   }) async {
-    await _firestore.collection('users').doc(uid).update({
-      'name': name,
-    });
+    await _firestore.collection('users').doc(uid).update({'name': name});
     await _auth.currentUser?.updateDisplayName(name);
   }
 
@@ -93,25 +80,21 @@ class FirebaseServices {
 
       // Get file extension properly
       String extension = file.name.split('.').last.toLowerCase();
-      if (extension.isEmpty ||
-          !RegExp(r'^[a-z0-9]+$').hasMatch(extension)) {
-        extension =
-            'jpg'; // Default to jpg if extension is invalid
+      if (extension.isEmpty || !RegExp(r'^[a-z0-9]+$').hasMatch(extension)) {
+        extension = 'jpg'; // Default to jpg if extension is invalid
       }
 
       // Save photo locally
-      final localPath =
-          await LocalStorageService.saveProfilePhoto(
-            uid: uid,
-            bytes: bytes,
-            extension: extension,
-          );
+      final localPath = await LocalStorageService.saveProfilePhoto(
+        uid: uid,
+        bytes: bytes,
+        extension: extension,
+      );
 
       // Store indicator in Firestore that photo is stored locally
 
       await _firestore.collection('users').doc(uid).update({
-        'photoUrl':
-            'local:$uid', // Store indicator, not the full path
+        'photoUrl': 'local:$uid', // Store indicator, not the full path
         'hasLocalPhoto': true,
       });
 
@@ -133,9 +116,7 @@ class FirebaseServices {
   // Get local photo file path for a user
   Future<String?> getLocalPhotoPath(String uid) async {
     try {
-      final file = await LocalStorageService.getProfilePhotoFile(
-        uid,
-      );
+      final file = await LocalStorageService.getProfilePhotoFile(uid);
       return file?.path;
     } catch (e) {
       return null;

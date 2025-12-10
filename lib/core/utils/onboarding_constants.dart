@@ -1,7 +1,4 @@
 import 'package:final_project/featrues/onboarding/data/models/onboarding_page_data.dart';
-import 'package:final_project/featrues/onboarding/presentation/views/onboarding_view.dart'
-    hide OnboardingPageData;
-
 import 'package:flutter/material.dart';
 
 class OnboardingConstants {

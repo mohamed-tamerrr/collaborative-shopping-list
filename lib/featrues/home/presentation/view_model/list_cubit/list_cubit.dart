@@ -16,7 +16,7 @@ part 'list_state.dart';
 class ListCubit extends Cubit<ListState> {
   ListCubit() : super(ListInitial());
   StreamSubscription? _subscription;
-  StreamSubscription? _userPinnedSubscription; // pinned lists
+
   String? currentListId;
   final FirebaseServices _firebaseServices = FirebaseServices();
   final NotificationService _notificationService = NotificationService();
@@ -155,7 +155,9 @@ class ListCubit extends Cubit<ListState> {
       // Send notifications to all members except the owner
       final ownerName =
           currentUser.displayName ?? currentUser.email ?? 'Someone';
-      final membersToNotify = members.where((memberId) => memberId != ownerId).toList();
+      final membersToNotify = members
+          .where((memberId) => memberId != ownerId)
+          .toList();
 
       if (membersToNotify.isNotEmpty) {
         for (final memberId in membersToNotify) {
