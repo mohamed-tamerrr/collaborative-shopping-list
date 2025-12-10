@@ -1,23 +1,19 @@
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/featrues/onboarding/data/models/onboarding_page_data.dart';
-import 'package:final_project/featrues/onboarding/presentation/views/onboarding_view.dart';
 import 'package:flutter/material.dart';
 
-class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({
-    super.key,
-    required this.data,
-    required this.pageIndex,
-  });
+class OnboardingAnimatedPage extends StatefulWidget {
+  const OnboardingAnimatedPage({super.key, required this.data});
 
   final OnboardingPageData data;
-  final int pageIndex;
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
+  State<OnboardingAnimatedPage> createState() =>
+      _OnboardingAnimatedPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage>
+class _OnboardingAnimatedPageState
+    extends State<OnboardingAnimatedPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _iconScale;
@@ -141,104 +137,121 @@ class _OnboardingPageState extends State<OnboardingPage>
               SizedBox(height: isVerySmallScreen ? 20.0 : 40.0),
 
               // Animated Icon/Illustration
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _iconFade.value,
-                    child: Transform.scale(
-                      scale: _iconScale.value,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Container(
-                  width: iconSize,
-                  height: iconSize,
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(
-                      alpha: 0.15,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    widget.data.icon,
-                    size: iconInnerSize,
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
+              _buildAnimatedIcon(iconSize, iconInnerSize),
 
               SizedBox(height: spacingBetweenIconAndTitle),
 
               // Animated Title
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _textFade.value,
-                    child: SlideTransition(
-                      position: _textSlide,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Text(
-                  widget.data.title,
-                  style: TextStyle(
-                    fontSize: titleFontSize,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.white,
-                    letterSpacing: 1.2,
-                    height: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+              _buildAnimatedTitle(titleFontSize),
 
               SizedBox(
                 height: spacingBetweenTitleAndDescription,
               ),
 
               // Animated Description
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _textFade.value,
-                    child: SlideTransition(
-                      position: _textSlide,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.02,
-                  ),
-                  child: Text(
-                    widget.data.description,
-                    style: TextStyle(
-                      fontSize: descriptionFontSize,
-                      color: AppColors.white.withValues(
-                        alpha: 0.8,
-                      ),
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.5,
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: isVerySmallScreen ? 4 : 5,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+              _buildAnimatedDescription(
+                descriptionFontSize,
+                screenWidth,
               ),
 
               SizedBox(height: isVerySmallScreen ? 20.0 : 40.0),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedIcon(
+    double iconSize,
+    double iconInnerSize,
+  ) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _iconFade.value,
+          child: Transform.scale(
+            scale: _iconScale.value,
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        width: iconSize,
+        height: iconSize,
+        decoration: BoxDecoration(
+          color: AppColors.white.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          widget.data.icon,
+          size: iconInnerSize,
+          color: AppColors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedTitle(double titleFontSize) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _textFade.value,
+          child: SlideTransition(
+            position: _textSlide,
+            child: child,
+          ),
+        );
+      },
+      child: Text(
+        widget.data.title,
+        style: TextStyle(
+          fontSize: titleFontSize,
+          fontWeight: FontWeight.w800,
+          color: AppColors.white,
+          letterSpacing: 1.2,
+          height: 1.2,
+        ),
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildAnimatedDescription(
+    double descriptionFontSize,
+    double screenWidth,
+  ) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _textFade.value,
+          child: SlideTransition(
+            position: _textSlide,
+            child: child,
+          ),
+        );
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.02,
+        ),
+        child: Text(
+          widget.data.description,
+          style: TextStyle(
+            fontSize: descriptionFontSize,
+            color: AppColors.white.withValues(alpha: 0.8),
+            fontWeight: FontWeight.w300,
+            letterSpacing: 0.5,
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 5,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
