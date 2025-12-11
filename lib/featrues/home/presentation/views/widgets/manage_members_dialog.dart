@@ -3,6 +3,7 @@ import 'package:final_project/core/services/firebase_services.dart';
 import 'package:final_project/core/utils/app_colors.dart';
 import 'package:final_project/core/utils/show_snack_bar.dart';
 import 'package:final_project/featrues/home/presentation/view_model/list_cubit/list_cubit.dart';
+import 'package:final_project/featrues/home/presentation/views/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,10 +28,10 @@ class ManageMembersDialog extends StatefulWidget {
 class _ManageMembersDialogState extends State<ManageMembersDialog> {
   final FirebaseServices _firebaseServices = FirebaseServices();
   Set<String> _selectedUserIds = {};
-  // Store displayed user info: {uid, email}
+  // Store displayed user info: {uid, email, name, photoUrl}
   List<Map<String, dynamic>> _displayedUsers = [];
-  bool _initialized = false;
   bool _isSaving = false;
+  late Future<List<Map<String, dynamic>>> _membersFuture;
 
   @override
   void initState() {
@@ -39,28 +40,30 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
     _selectedUserIds = widget.currentMembers
         .where((id) => id != widget.ownerId)
         .toSet();
+    _membersFuture = _fetchMemberDetails();
   }
 
   Future<List<Map<String, dynamic>>> _fetchMemberDetails() async {
-    if (_initialized) return _displayedUsers;
+    final futures = _selectedUserIds.map((userId) {
+      return FirebaseFirestore.instance.collection('users').doc(userId).get();
+    });
 
+    final snapshots = await Future.wait(futures);
     List<Map<String, dynamic>> loadedUsers = [];
 
-    for (String userId in _selectedUserIds) {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      if (userDoc.exists) {
+    for (var doc in snapshots) {
+      if (doc.exists) {
+        final data = doc.data();
         loadedUsers.add({
-          'uid': userId,
-          'email': userDoc.data()?['email'] ?? 'Unknown',
+          'uid': doc.id,
+          'email': data?['email'] ?? 'Unknown',
+          'name': data?['name'] ?? 'Unknown',
+          'photoUrl': data?['photoUrl'],
         });
       }
     }
 
     _displayedUsers = loadedUsers;
-    _initialized = true;
     return _displayedUsers;
   }
 
@@ -90,7 +93,7 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
         width: screenWidth * 0.9 > 500 ? 500 : screenWidth * 0.9,
         constraints: BoxConstraints(maxHeight: screenHeight * 0.55),
         child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: _fetchMemberDetails(),
+          future: _membersFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -131,9 +134,28 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
                             final user = _displayedUsers[index];
                             final userId = user['uid'] as String;
                             final email = user['email'] as String;
+                            final name = user['name'] as String;
+                            final photoUrl = user['photoUrl'] as String?;
 
                             return ListTile(
-                              title: Text(email),
+                              leading: UserAvatar(
+                                name: name,
+                                photoUrl: photoUrl,
+                                radius: 20,
+                              ),
+                              title: Text(
+                                name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                email,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
                               trailing: IconButton(
                                 icon: const Icon(Icons.close),
                                 onPressed: () {
@@ -268,6 +290,7 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
               if (!context.mounted) return;
               if (userDoc != null && userDoc.exists) {
                 final userId = userDoc.id;
+                final data = userDoc.data();
                 final currentUser = _firebaseServices.currentUser;
 
                 if (userId == currentUser?.uid) {
@@ -294,14 +317,15 @@ class _ManageMembersDialogState extends State<ManageMembersDialog> {
 
                 setState(() {
                   _selectedUserIds.add(userId);
-                  _displayedUsers.add({'uid': userId, 'email': email});
+                  _displayedUsers.add({
+                    'uid': userId,
+                    'email': email,
+                    'name': data?['name'] ?? 'Unknown',
+                    'photoUrl': data?['photoUrl'],
+                  });
                 });
                 if (context.mounted) {
                   Navigator.pop(context);
-                  ShowSnackBar.successSnackBar(
-                    context: context,
-                    content: 'User added',
-                  );
                 }
               } else {
                 if (context.mounted) {

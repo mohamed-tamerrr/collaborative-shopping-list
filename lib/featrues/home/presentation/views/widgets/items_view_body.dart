@@ -47,29 +47,29 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
     return SafeArea(
       child: Padding(
         padding: AppStyles.screenPaddingHorizontal,
-        child: Column(
-          children: [
-            ItemsViewAppBar(
-              currentName: currentName,
-              listModel: widget.listModel,
-              onRename: updateName,
-            ),
-            const SizedBox(height: AppStyles.spacingM),
-            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
-                  .collection('lists')
-                  .doc(widget.listModel.id)
-                  .snapshots(),
-              builder: (context, listSnapshot) {
-                if (!listSnapshot.hasData || !listSnapshot.data!.exists) {
-                  return const SizedBox.shrink();
-                }
+        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance
+              .collection('lists')
+              .doc(widget.listModel.id)
+              .snapshots(),
+          builder: (context, listSnapshot) {
+            ListModel currentListModel = widget.listModel;
+            List<String> members = widget.listModel.members;
 
-                final members = List<String>.from(
-                  listSnapshot.data!.data()?['members'] ?? [],
-                );
+            if (listSnapshot.hasData && listSnapshot.data!.exists) {
+              currentListModel = ListModel.fromJson(listSnapshot.data!);
+              members = currentListModel.members;
+            }
 
-                return FutureBuilder<List<Map<String, dynamic>>>(
+            return Column(
+              children: [
+                ItemsViewAppBar(
+                  currentName: currentName,
+                  listModel: currentListModel,
+                  onRename: updateName,
+                ),
+                const SizedBox(height: AppStyles.spacingM),
+                FutureBuilder<List<Map<String, dynamic>>>(
                   future: _getMembersData(members),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -87,7 +87,6 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                     }
 
                     final membersData = snapshot.data ?? [];
-                    // Fallback handled by receiving widget
 
                     return GroupAvatars(
                       membersData: membersData,
@@ -108,12 +107,12 @@ class _ItemsViewBodyState extends State<ItemsViewBody> {
                       },
                     );
                   },
-                );
-              },
-            ),
-            const SizedBox(height: AppStyles.spacingM),
-            Expanded(child: ItemsViewContent(tagName: widget.tagName)),
-          ],
+                ),
+                const SizedBox(height: AppStyles.spacingM),
+                Expanded(child: ItemsViewContent(tagName: widget.tagName)),
+              ],
+            );
+          },
         ),
       ),
     );

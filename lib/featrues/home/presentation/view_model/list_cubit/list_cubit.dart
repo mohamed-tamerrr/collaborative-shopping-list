@@ -344,13 +344,6 @@ class ListCubit extends Cubit<ListState> {
       } catch (e) {
         log('Error sending notification to $userId: $e');
       }
-
-      if (context.mounted) {
-        ShowSnackBar.successSnackBar(
-          context: context,
-          content: 'User added successfully',
-        );
-      }
     } catch (e) {
       if (context.mounted) {
         ShowSnackBar.failureSnackBar(context: context);
@@ -433,13 +426,6 @@ class ListCubit extends Cubit<ListState> {
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         'members': FieldValue.arrayRemove([userId]),
       });
-
-      if (context.mounted) {
-        ShowSnackBar.successSnackBar(
-          context: context,
-          content: 'User removed successfully',
-        );
-      }
     } catch (e) {
       if (context.mounted) {
         ShowSnackBar.failureSnackBar(context: context);
