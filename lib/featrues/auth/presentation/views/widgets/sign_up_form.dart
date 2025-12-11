@@ -55,7 +55,7 @@ class _SignUpFormState extends State<SignUpForm> {
         content: 'Account created successfully!',
       );
 
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
     } catch (e) {
       if (!mounted) return;
 

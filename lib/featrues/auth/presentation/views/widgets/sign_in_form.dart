@@ -50,7 +50,7 @@ class _SignInFormState extends State<SignInForm> {
         content: 'Sign in successful!',
       );
 
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
     } catch (e) {
       if (!mounted) return;
       String errorMessage = e.toString();

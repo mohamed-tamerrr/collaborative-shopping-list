@@ -9,13 +9,9 @@ class FooterSignIn extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "Already have an account?",
-          style: AppStyles.bodyLarge(),
-        ),
+        Text("Already have an account?", style: AppStyles.bodyLarge()),
         TextButton(
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, '/'),
+          onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
           child: Text('Sign In', style: AppStyles.link()),
         ),
       ],

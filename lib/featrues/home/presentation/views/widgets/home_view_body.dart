@@ -32,6 +32,9 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         } else if (state is ListFailure) {
           return Center(child: Text('Failure')); //! : bad practice !!
         } else if (state is ListSuccess) {
+          if (state.lists.isEmpty) {
+            return const NoListPage();
+          }
           return Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: () {
